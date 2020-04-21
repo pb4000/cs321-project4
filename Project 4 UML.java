@@ -1,50 +1,79 @@
 // driver class
-public class GeneBankCreateBTree {
+public interface GeneBankCreateBTree {
+
+}
+
+// reads from given file and converts DNA to binary
+public interface FileReader {
 
 }
 
 // wrapper for Scanner 
-public class ScannerWrapper {
+public interface ScannerWrapper {
+
+	// constructor given location of file to read from
+	public ScannerWrapper(String location);
+
 	// checks cache for node with given line number first
 	// if not there, then read from file
-	public BTreeNode getNode(int lineNumber) 
+	public BTreeNode getNode(int lineNumber);
 
 	// checks if node is full
-	public boolean isFull(int lineNumber)
+	public boolean isFull(int lineNumber);
 
 	// returns the next line
-	public String nextLine()
+	public String nextLine();
+
+	// closes Scanner
+	public void close();
 }
 
 // wrapper for printWriter
-public class PrintWrapper {
+public interface PrintWrapper {
 	// splits the node given by the line number
-	public void split(int lineNumber)
+	public void split(int lineNumber);
 
 	// adds a new node to the end of the file
-	public void addNode(BTreeNode node)
+	public void addNode(BTreeNode node);
+
+	// closes PrintWriter
+	public void close();
 }
 
+// do in sprint 1
 // parses file to node and vice versa
-public class Parser {
+public interface Parser {
 	// instantiates a ScannerWrapper and reads file into a BTreeNode object
-	public BTreeNode fileToNode(int lineNumber)
+	public static BTreeNode fileToNode(int lineNumber);
 
 	// calls BTreeNode.toString
-	public String nodeToFile(BTreeNode node)
+	public static String nodeToFile(BTreeNode node);
 }
 
+// do in sprint 1
 // btree node object
-public class BTreeNode {
+public interface BTreeNode implements Comparable {
 	int[] childPointers;	// stores line # of children
 	int self pointer;	// pointer to self line number 
-	Long[] values;	// stored DNA values in long form
+	long[] values;	// stored DNA values in long form
+
+	// returns values
+	public long[] getValues();
+
+	// returns child pointers as line number
+	public int[] getChildren();
+
+	// returns self pointer
+	public int getSelfPointer();
+
+	// compares value to another Node based on the first value stored (getValues[0])
+	public int compareTo(BTreeNode);
 
 	// converts self to a String suitable for writing into the file
-	public String toString()
+	public String toString();
 }
 
 // cache class to store nodes
-public class Cache {
+public interface Cache {
 	// already done
 }
