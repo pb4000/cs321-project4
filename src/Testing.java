@@ -3,5 +3,9 @@ public class Testing {
         String temp = "Hello";
         temp += "\nworld!";
         System.out.println(temp);
+
+        Long[] list = new Long[1];
+        list[0] = 0b010001L;
+        System.out.println(Long.toBinaryString(list[0]));
     }
 }

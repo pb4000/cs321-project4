@@ -10,6 +10,7 @@ Self-pointer (Line Number)
 Is Leaf (1 or 0)
 Parent Pointer (Line Number) (root node parent -1)
 Number of Objects Stored
+Number of children
 degree + 1 child pointers
  |
  |

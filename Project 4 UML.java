@@ -48,6 +48,12 @@ public interface Parser {
 
 	// calls BTreeNode.toString
 	public static String nodeToFile(BTreeNode node);
+
+	// converts binary long to String of DNA
+	public static String binaryToDNA(long bin);
+
+	// converts String DNA to a binary long
+	public static long dnaToBinary(String dna);
 }
 
 // do in sprint 1
