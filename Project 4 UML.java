@@ -52,9 +52,9 @@ public interface Parser {
 
 // do in sprint 1
 // btree node object
-public interface BTreeNode implements Comparable {
+public interface BTreeNode extends Comparable {
 	int[] childPointers;	// stores line # of children
-	int self pointer;	// pointer to self line number 
+	int selfPointer;	// pointer to self line number 
 	long[] values;	// stored DNA values in long form
 
 	// returns values
@@ -67,7 +67,7 @@ public interface BTreeNode implements Comparable {
 	public int getSelfPointer();
 
 	// compares value to another Node based on the first value stored (getValues[0])
-	public int compareTo(BTreeNode);
+	public int compareTo(BTreeNode node);
 
 	// converts self to a String suitable for writing into the file
 	public String toString();
