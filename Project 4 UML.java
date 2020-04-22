@@ -8,6 +8,7 @@ public interface FileReader {
 
 }
 
+// do in sprint 2
 // wrapper for Scanner 
 public interface ScannerWrapper {
 
@@ -18,12 +19,6 @@ public interface ScannerWrapper {
 	// if not there, then read from file
 	public BTreeNode getNode(int lineNumber);
 
-	// checks if node is full
-	public boolean isFull(int lineNumber);
-
-	// returns the next line
-	public String nextLine();
-
 	// returns the next available line to be used for a node pointer
 	public static int getNextPointer();
 
@@ -31,10 +26,9 @@ public interface ScannerWrapper {
 	public void close();
 }
 
+// do in sprint 2
 // wrapper for printWriter
 public interface PrintWrapper {
-	// splits the node given by the line number
-	public void split(int lineNumber);
 
 	// whites the node to the file at its given self-pointer
 	// EX: node.getSelfPointer() returns 25, so write node at line 25
