@@ -24,6 +24,9 @@ public interface ScannerWrapper {
 	// returns the next line
 	public String nextLine();
 
+	// returns the next available line to be used for a node pointer
+	public static int getNextPointer();
+
 	// closes Scanner
 	public void close();
 }
@@ -33,7 +36,8 @@ public interface PrintWrapper {
 	// splits the node given by the line number
 	public void split(int lineNumber);
 
-	// adds a new node to the end of the file
+	// whites the node to the file at its given self-pointer
+	// EX: node.getSelfPointer() returns 25, so write node at line 25
 	public void addNode(BTreeNode node);
 
 	// closes PrintWriter
