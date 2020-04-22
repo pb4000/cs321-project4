@@ -50,10 +50,10 @@ public interface Parser {
 	public static String nodeToFile(BTreeNode node);
 
 	// converts binary long to String of DNA
-	public static String binaryToDNA(long bin);
+	public static String decimalToBinary(long dec);
 
 	// converts String DNA to a binary long
-	public static long dnaToBinary(String dna);
+	public static long dnaToDecimal(String dna);
 }
 
 // do in sprint 1
