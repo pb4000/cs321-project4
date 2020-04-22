@@ -151,6 +151,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
             }
             // assign next childPointer
             childPointers[middle] = ScannerWrapper.getNextPointer();
+            childPointers[middle + 1] = childPointers[middle] + nodeDiskSize;
             // 2. instantiate BTreeNodes
             arrayOut[0] = new BTreeNode(k, degree, childPointers[middle], selfPointer, leftValues, leftFrequency, leftChildPointers);
             arrayOut[1] = new BTreeNode(k, degree, childPointers[middle] + nodeDiskSize, selfPointer, rightValues, rightFrequency, rightChildPointers);
