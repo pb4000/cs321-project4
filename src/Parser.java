@@ -1,6 +1,8 @@
 public class Parser {
 
-    public Parser(String X)
+    public Parser(String X){
+        
+    }
 
         // instantiates a ScannerWrapper and reads file into a BTreeNode object
         public static BTreeNode fileToNode(int lineNumber){
