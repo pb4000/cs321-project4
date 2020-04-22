@@ -1,19 +1,9 @@
 public class Testing {
     public static void main(String[] args) {
-        String temp = "Hello";
-        temp += "\nworld!";
-        System.out.println(temp);
-
-        Long[] list = new Long[1];
-        list[0] = 0b010001L;
-        System.out.println(Long.valueOf(list[0]));
-
-        Long test = Long.parseLong("010001", 2);
-        String output = "";
-        String binary = Long.toBinaryString(test);
-        for (int i = binary.length(); i < 8; i++)
-            output += "0";
-        output += binary;
-        System.out.println(output);
+        int[] childPointers = { 1, 2, 3, 4, 5, 6 };
+        Long[] values = { 001100L, 101001L, 000001L, -1L, 000000L };
+        int[] frequency = { 2, 4, 1, 20, 5 };
+        BTreeNode node = new BTreeNode(3, 5);
+        System.out.println(node.toString() + "\nEOF\n\n\n\n");
     }
 }
