@@ -49,10 +49,11 @@ public interface Parser {
 	// calls BTreeNode.toString
 	public static String nodeToFile(BTreeNode node);
 
-	// converts binary long to String of DNA
+	// converts decimal long to String of binary
+	// don't forget to add missing 0's in front
 	public static String decimalToBinary(long dec);
 
-	// converts String DNA to a binary long
+	// converts String DNA to a decimal long
 	public static long dnaToDecimal(String dna);
 }
 
