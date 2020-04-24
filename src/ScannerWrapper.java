@@ -4,4 +4,9 @@ public class ScannerWrapper {
     public static int getNextPointer() {
         return -1;
     }
+
+    // returns the given node from the file
+    public static BTreeNode getNode(int lineNumber) {
+        return null;
+    }
 }

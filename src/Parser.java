@@ -44,18 +44,18 @@ public class Parser {
         // converts String DNA to a binary long
         public static long dnaToDecimal(String dna){
             String bin = "";
+            dna = dna.toUpperCase();
             for(int i=0;i<dna.length();i++){
                 if(dna.charAt(i)=='A'){
                     bin+="00";
-                }
-                if(dna.charAt(i)=='T'){
+                } else if(dna.charAt(i)=='T'){
                     bin+="11";
-                }
-                if(dna.charAt(i)=='C'){
+                } else if(dna.charAt(i)=='C'){
                     bin+="01";
-                }
-                if(dna.charAt(i)=='G'){
+                } else if(dna.charAt(i)=='G'){
                     bin+="10";
+                } else {
+                    return -1L;
                 }
             }
             return Long.parseLong(bin, 2);

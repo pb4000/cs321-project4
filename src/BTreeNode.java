@@ -1,12 +1,16 @@
+import java.util.Arrays;
+
 /**
- * Organize values and add methods within BTreeNode? Or create BTree driver class to create and manage nodes?
- * Probably within BTreeNode. Consult Wesley.
+ * Organize values and add methods within BTreeNode? Or create BTree driver
+ * class to create and manage nodes? Probably within BTreeNode. Consult Wesley.
  * 
  * NOTE: In all cases, a value of -1 should be treated as EMPTY or NULL.
  * 
- * Any time there is a value inserted into or removed from a BTreeNode, the array will be reordered and sorted.
+ * Any time there is a value inserted into or removed from a BTreeNode, the
+ * array will be reordered and sorted.
  * 
- * Add a split method which splits arrays in half when the node is full and returns 2 new nodes.
+ * Add a split method which splits arrays in half when the node is full and
+ * returns 2 new nodes.
  */
 public class BTreeNode implements Comparable<BTreeNode> {
     private int[] childPointers;
@@ -61,13 +65,19 @@ public class BTreeNode implements Comparable<BTreeNode> {
     }
 
     // if array is full, returns false
-    // inserts a new value and frequency at the end of each array
+    // inserts a new value at the end of each array
     // sorts the arrays
-    public boolean add(Long newValue, int newFrequency) {
+    public boolean add(Long newValue) {
         if (isFull())
             return false;
+        for (int i = 0; i < degree; i++) {
+            if (values[i] == newValue) {
+                frequency[i]++;
+                return true;
+            }
+        }
         values[values.length - 1] = newValue;
-        frequency[frequency.length - 1] = newFrequency;
+        frequency[frequency.length - 1] = 1;
         sort();
         return true;
     }
@@ -149,9 +159,14 @@ public class BTreeNode implements Comparable<BTreeNode> {
                     childPointers[i] = -1;
                 }
             }
+            // move last value to beginning
+            values[0] = values[middle];
+            values[middle] = -1L;
+            frequency[0] = frequency[middle];
+            frequency[middle] = -1;
             // assign next childPointer
-            childPointers[middle] = ScannerWrapper.getNextPointer();
-            childPointers[middle + 1] = childPointers[middle] + nodeDiskSize;
+            childPointers[0] = ScannerWrapper.getNextPointer();
+            childPointers[1] = childPointers[middle] + nodeDiskSize;
             // 2. instantiate BTreeNodes
             arrayOut[0] = new BTreeNode(k, degree, childPointers[middle], selfPointer, leftValues, leftFrequency, leftChildPointers);
             arrayOut[1] = new BTreeNode(k, degree, childPointers[middle] + nodeDiskSize, selfPointer, rightValues, rightFrequency, rightChildPointers);
@@ -160,7 +175,13 @@ public class BTreeNode implements Comparable<BTreeNode> {
     }
 
     public int compareTo(BTreeNode n) {
-        return -1;
+        if (values[0] - n.getValues()[0] < 0) {
+            return 1;
+        } else if (values[0] - n.getValues()[0] > 0) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 
     public Long[] getValues() {
@@ -196,7 +217,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
         for (int i = 0; i < degree; i++) {
             // what if stored value is 000000? use size k to infer values stored, but how to discern empty vs 000000?
             // default array filled with -1?
-            if (values[i] != 0L)
+            if (values[i] != -1L)
                 totalObjects++;
         }
         return totalObjects;
@@ -205,7 +226,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
     public int getTotalChildren() {
         int totalChildren = 0;
         for (int i = 0; i < childPointers.length; i++) {
-            if (childPointers[i] != 0)
+            if (childPointers[i] != -1)
                 totalChildren++;
         }
         return totalChildren;
@@ -215,7 +236,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
     public String toString() {
         String output = "";
         output += selfPointer + "\n";
-        if (getTotalObjects() != 0)
+        if (getTotalChildren() == 0)
             output += "0\n";
         else
             output += "1\n";
@@ -223,14 +244,14 @@ public class BTreeNode implements Comparable<BTreeNode> {
         output += getTotalObjects() + "\n";
         output += getTotalChildren() + "\n";
         for (int i = 0; i < degree + 1; i++) {
-            if (childPointers[i] != 0) {
+            if (childPointers[i] != -1) {
                 output += childPointers[i] + "\n";
             } else {
                 output += "\n";
             }
         }
         for (int i = 0; i < degree; i++) {
-            if (values[i] != -1) {
+            if (values[i] != -1L) {
                 output += frequency[i] + " " + valueToString(values[i]) + "\n";
             } else {
                 output += "\n";
@@ -264,6 +285,78 @@ public class BTreeNode implements Comparable<BTreeNode> {
     // sort values and frequency based on ordering of values
     // afterwards, sort childPointers based on ordered values
     private void sort() {
-        // sort stuff
+        Long tempLong = values[degree - 1];
+        int tempint = frequency[degree - 1];
+        for (int i = 0; i < degree; i++) {
+            if (values[i] == -1L) {
+                values[i] = tempLong;
+                frequency[i] = tempint;
+                return;
+            }
+            if (values[i] > tempLong) {
+                shift(i);
+                values[i] = tempLong;
+                frequency[i] = tempint;
+                return;
+            }
+        }
+        sortChildren();
+    }
+
+    private void sortChildren() {
+        int[] temp = childPointers; // used to store pointers and iterate through them
+        BTreeNode tempNode;
+        for (int i = 0; i < degree + 1; i++) {
+            childPointers[i] = -1;
+        }
+        for (int i = 0; i < degree + 1; i++) {  // iterate through childPointers
+            if (temp[i] != -1) {   // if a pointer is stored here
+                tempNode = ScannerWrapper.getNode(temp[i]);
+                if (i == degree) {  // if we are at the end
+                    if (tempNode.getValues()[0] < values[i - 1]) {  // if the last child pointer does not belong there
+                        for (int k = 0; k < degree + 1; k++) {  // iterate until you find where it belongs
+                            if (k == degree - 1) {
+                                childPointers[degree] = tempNode.getSelfPointer();
+                                break;
+                            } else if (k == 0) {
+                                if (tempNode.getValues()[0] < values[k]) {
+                                    childPointers[k] = tempNode.getSelfPointer();
+                                    break;
+                                }
+                            } else if (tempNode.getValues()[0] < values[k] && tempNode.getValues()[0] > values[k - 1]) {
+                                childPointers[k] = tempNode.getSelfPointer();
+                                break;
+                            }
+                        }
+                        childPointers[i] = -1;  // reset the value of that child pointer to empty
+
+                    }
+                } else if (tempNode.getValues()[0] > values[i] || tempNode.getValues()[0] < values[i - 1]) {  // if that pointer does not belong there
+                    for (int k = 0; k < degree + 1; k++) {  // iterate until you find where it belongs
+                        if (k == degree - 1) {
+                            childPointers[degree] = tempNode.getSelfPointer();
+                            break;
+                        } else if (k == 0) {
+                            if (tempNode.getValues()[0] < values[k]) {
+                                childPointers[k] = tempNode.getSelfPointer();
+                                break;
+                            }
+                        } else if (tempNode.getValues()[0] < values[k] && tempNode.getValues()[0] > values[k - 1]) {
+                            childPointers[k] = tempNode.getSelfPointer();
+                            break;
+                        }
+                    }
+                    childPointers[i] = -1;  // reset the value of that child pointer to empty
+                }
+            }
+        }
+    }
+
+    // shifts values and frequency to make space for new entries
+    private void shift(int position) {
+        for (int i = degree - 2; i >= position; i--) {
+            values[i + 1] = values[i];
+            frequency[i + 1] = frequency[i];
+        }
     }
 }
