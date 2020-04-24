@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 /**
  * Organize values and add methods within BTreeNode? Or create BTree driver
  * class to create and manage nodes? Probably within BTreeNode. Consult Wesley.
@@ -130,6 +128,12 @@ public class BTreeNode implements Comparable<BTreeNode> {
             int[] rightFrequency = new int[degree];
             int[] leftChildPointers = new int[degree + 1];
             int[] rightChildPointers = new int[degree + 1];
+            initEmptyValues(leftValues);
+            initEmptyValues(rightValues);
+            initEmptyValues(leftFrequency);
+            initEmptyValues(rightFrequency);
+            initEmptyValues(leftChildPointers);
+            initEmptyValues(rightChildPointers);
             arrayOut = new BTreeNode[2];
             // 1. assign values and frequency, as well as child pointers if possible
             int middle = values.length / 2;
@@ -166,10 +170,10 @@ public class BTreeNode implements Comparable<BTreeNode> {
             frequency[middle] = -1;
             // assign next childPointer
             childPointers[0] = ScannerWrapper.getNextPointer();
-            childPointers[1] = childPointers[middle] + nodeDiskSize;
+            childPointers[1] = childPointers[0] + nodeDiskSize;
             // 2. instantiate BTreeNodes
-            arrayOut[0] = new BTreeNode(k, degree, childPointers[middle], selfPointer, leftValues, leftFrequency, leftChildPointers);
-            arrayOut[1] = new BTreeNode(k, degree, childPointers[middle] + nodeDiskSize, selfPointer, rightValues, rightFrequency, rightChildPointers);
+            arrayOut[0] = new BTreeNode(k, degree, childPointers[0], selfPointer, leftValues, leftFrequency, leftChildPointers);
+            arrayOut[1] = new BTreeNode(k, degree, childPointers[1], selfPointer, rightValues, rightFrequency, rightChildPointers);
         }
         return arrayOut;
     }
@@ -237,9 +241,9 @@ public class BTreeNode implements Comparable<BTreeNode> {
         String output = "";
         output += selfPointer + "\n";
         if (getTotalChildren() == 0)
-            output += "0\n";
-        else
             output += "1\n";
+        else
+            output += "0\n";
         output += parentPointer + "\n";
         output += getTotalObjects() + "\n";
         output += getTotalChildren() + "\n";
@@ -291,6 +295,8 @@ public class BTreeNode implements Comparable<BTreeNode> {
             if (values[i] == -1L) {
                 values[i] = tempLong;
                 frequency[i] = tempint;
+                values[degree - 1] = -1L;
+                frequency[degree - 1] = -1;
                 return;
             }
             if (values[i] > tempLong) {
