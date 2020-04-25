@@ -1,16 +1,17 @@
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class ScannerWrapper {
 int k;
 int degree;
-Scanner filescan= new Scanner();
+Scanner filescan;
 
-    public ScannerWrapper(int newk, int newdegree, File f){
-        k=newk;
-        degree=newdegree;
+    public ScannerWrapper(File f, int d, int givenk)throws FileNotFoundException{
         filescan = new Scanner(f);
+        degree=d;
+        k=givenk;
     }
-    //should create a scanner to be used to read through the file
     // returns next available node pointer. Used in split method in BTreeNode
     public static int getNextPointer() {
         //this should just take in all of the values of a stored node from the file and move into a usable BTreeNode
@@ -19,6 +20,24 @@ Scanner filescan= new Scanner();
 
     // returns the given node from the file
     public static BTreeNode getNode(int lineNumber) {
+        return null;
+    }
+
+    public BTreeNode readNode(){
+        int selfPointer = filescan.nextInt();
+        int isLeaf = filescan.nextInt();
+        int parentPointer = filescan.nextInt();
+        int[] childPointers  = new int[degree+1];
+        int[] childValues = new int[degree+1];
+
+        for(int i=0;i<degree+1;i++){
+
+        }
+
+        for(int i=0;i<degree+1;i++){
+
+        }
+
         return null;
     }
 }
