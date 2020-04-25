@@ -19,11 +19,7 @@ Scanner filescan;
     }
 
     // returns the given node from the file
-    public static BTreeNode getNode(int lineNumber) {
-        return null;
-    }
-
-    public BTreeNode readNode(){
+    public BTreeNode getNode(int lineNumber) {
         int selfPointer = filescan.nextInt();
         int isLeaf = filescan.nextInt();
         int parentPointer = filescan.nextInt();
@@ -43,5 +39,5 @@ Scanner filescan;
         }
         BTreeNode X = new BTreeNode(k, degree, selfPointer, parentPointer, Values, frequency, childPointers);
         return X;
-    }
+    }  
 }
