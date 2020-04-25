@@ -3,20 +3,18 @@ import java.util.Scanner;
 
 public class Parser {
     BTreeNode val;
-    int degree;
-    int k;
-    public Parser(String X){
-        //changechange
+    int degree=0;
+    int k=1;
+    String filename="";
+    public Parser(String file,int givenk,int givendegree){
+        //why are we passing in a string to the parser constructor?
+        //shouldnt this be taking in just the file name, the degree, and the K value?
     }
 
         // instantiates a ScannerWrapper and reads file into a BTreeNode object
-        public static BTreeNode fileToNode(int lineNumber){
-            ScannerWrapper X = new ScannerWrapper("filename");
-            int NodePointer = X.nextInt();
-            int ParentPointer = X.nextInt();
-            BTreeNode node = new BTreeNode(k, degree, NodePointer, ParentPointer);
-
-            return node;
+        public BTreeNode fileToNode(int lineNumber){
+            ScannerWrapper X = new ScannerWrapper("filename",k,degree);
+            return X.getNode(lineNumber);
         }
     
         // calls BTreeNode.toString

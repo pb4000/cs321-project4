@@ -28,16 +28,20 @@ Scanner filescan;
         int isLeaf = filescan.nextInt();
         int parentPointer = filescan.nextInt();
         int[] childPointers  = new int[degree+1];
-        int[] childValues = new int[degree+1];
+        long[] Values = new long[degree];
+        int[] frequency = new int[degree];
 
         for(int i=0;i<degree+1;i++){
-
+            childPointers[i]=filescan.nextInt();
         }
 
-        for(int i=0;i<degree+1;i++){
-
+        for(int i=0;i<degree;i++){
+            String holder = filescan.nextLine();
+            Scanner lineread = new Scanner(holder);
+            frequency[i] = lineread.nextInt();
+            Values[i] = lineread.nextLong();
         }
-
-        return null;
+        BTreeNode X = new BTreeNode(k, degree, selfPointer, parentPointer, Values, frequency, childPointers);
+        return X;
     }
 }
