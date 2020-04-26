@@ -14,7 +14,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
     private int[] childPointers;
     // store values as numbers converted from binary
     // to convert back, convert value to binary, then fill in preceeding 0s based on k
-    Long[] values;
+    long[] values;
     int[] frequency;
     private int selfPointer;
     private int parentPointer;
@@ -30,7 +30,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
         this.selfPointer = selfPointer;
         this.parentPointer = parentPointer;
         childPointers = new int[degree + 1];
-        values = new Long[degree];
+        values = new long[degree];
         frequency = new int[degree];
         initEmptyValues(childPointers);
         initEmptyValues(values);
@@ -38,7 +38,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
         nodeDiskSize = 5 + (2 * degree) + 1;
     }
 
-    public BTreeNode(int k, int degree, int selfPointer, int parentPointer, Long[] values, int[] frequency, int[] childPointers) {
+    public BTreeNode(int k, int degree, int selfPointer, int parentPointer, long[] values, int[] frequency, int[] childPointers) {
         this.k = k;
         this.degree = degree;
         this.selfPointer = selfPointer;
@@ -54,7 +54,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
         this.degree = degree;
         selfPointer = parentPointer = -1;
         childPointers = new int[degree + 1];
-        values = new Long[degree];
+        values = new long[degree];
         frequency = new int[degree];
         initEmptyValues(childPointers);
         initEmptyValues(values);
@@ -65,15 +65,18 @@ public class BTreeNode implements Comparable<BTreeNode> {
     // if array is full, returns false
     // inserts a new value at the end of each array
     // sorts the arrays
-    public boolean add(Long newValue) {
-        if (isFull())
-            return false;
+    
+    // add option to search for where added value belongs
+    // i.e. return child pointer of where to add, or placxes value in array
+    public boolean add(long newValue) {
         for (int i = 0; i < degree; i++) {
             if (values[i] == newValue) {
                 frequency[i]++;
                 return true;
             }
         }
+        if (isFull())
+            return false;
         values[values.length - 1] = newValue;
         frequency[frequency.length - 1] = 1;
         sort();
@@ -101,7 +104,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
             return null;
         if (degree == 2) {
             // 0. initialize variables
-            Long[] childValues = new Long[degree];
+            long[] childValues = new long[degree];
             int[] childFrequency = new int[degree];
             int[] childChildPointers = new int[degree + 1];
             initEmptyValues(childValues);
@@ -122,8 +125,8 @@ public class BTreeNode implements Comparable<BTreeNode> {
             arrayOut[0] = new BTreeNode(k, degree, childPointers[1], selfPointer, childValues, childFrequency, childChildPointers);
         } else {
             // 0. initialize variables
-            Long[] leftValues = new Long[degree];
-            Long[] rightValues = new Long[degree];
+            long[] leftValues = new long[degree];
+            long[] rightValues = new long[degree];
             int[] leftFrequency = new int[degree];
             int[] rightFrequency = new int[degree];
             int[] leftChildPointers = new int[degree + 1];
@@ -188,7 +191,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
         }
     }
 
-    public Long[] getValues() {
+    public long[] getValues() {
         return values;
     }
 
@@ -236,35 +239,53 @@ public class BTreeNode implements Comparable<BTreeNode> {
         return totalChildren;
     }
 
+    private String add10Spaces(int input) {
+        String output = "";
+        for (int i = 0; i + Integer.toString(input).length() < 10; i++) {
+            output += " ";
+        }
+        return output + input;
+    }
+
+    private String add62Spaces(String input) {
+        String output = "";
+        for (int i = 0; i + input.length() < 62; i++) {
+            output += " ";
+        }
+        return output + input;
+    }
+
     @Override
     public String toString() {
         String output = "";
-        output += selfPointer + "\n";
+        output += add10Spaces(selfPointer) + "\n";
         if (getTotalChildren() == 0)
             output += "1\n";
         else
             output += "0\n";
-        output += parentPointer + "\n";
-        output += getTotalObjects() + "\n";
-        output += getTotalChildren() + "\n";
+        output += add10Spaces(parentPointer) + "\n";
+        output += add10Spaces(getTotalObjects()) + "\n";
+        output += add10Spaces(getTotalChildren()) + "\n";
         for (int i = 0; i < degree + 1; i++) {
-            if (childPointers[i] != -1) {
-                output += childPointers[i] + "\n";
-            } else {
-                output += "\n";
-            }
+            // if (childPointers[i] != -1) {
+            //     output += addZeros(childPointers[i]) + "\n";
+            // } else {
+            //     output += addZeros(-1) + "\n";
+            // }
+            output += add10Spaces(childPointers[i]) + "\n";
         }
         for (int i = 0; i < degree; i++) {
-            if (values[i] != -1L) {
-                output += frequency[i] + " " + valueToString(values[i]) + "\n";
-            } else {
-                output += "\n";
-            }
+            // if (values[i] != -1L) {
+            //     output += addZeros(frequency[i]) + " " + addSpaces(valueToString(values[i])) + "\n";
+            // } else {
+            //     output += addZeros(-1) + " " + addSpaces("-1") + "\n";
+            // }
+            output += add10Spaces(frequency[i]) + " " + add62Spaces(valueToString(values[i])) + "\n";
         }
         return output;
     }
 
-    private String valueToString(Long input) {
+    private String valueToString(long input) {
         String output = "";
         String binary = Long.toBinaryString(input);
         for (int i = binary.length(); i < k * 2; i++)
@@ -280,7 +301,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
     }
 
     // initializes given int array to -1
-    private static void initEmptyValues(Long[] arr) {
+    private static void initEmptyValues(long[] arr) {
         for (int i = 0; i < arr.length; i++) {
             arr[i] = -1L;
         }
@@ -289,19 +310,19 @@ public class BTreeNode implements Comparable<BTreeNode> {
     // sort values and frequency based on ordering of values
     // afterwards, sort childPointers based on ordered values
     private void sort() {
-        Long tempLong = values[degree - 1];
+        long templong = values[degree - 1];
         int tempint = frequency[degree - 1];
         for (int i = 0; i < degree; i++) {
             if (values[i] == -1L) {
-                values[i] = tempLong;
+                values[i] = templong;
                 frequency[i] = tempint;
                 values[degree - 1] = -1L;
                 frequency[degree - 1] = -1;
                 return;
             }
-            if (values[i] > tempLong) {
+            if (values[i] > templong) {
                 shift(i);
-                values[i] = tempLong;
+                values[i] = templong;
                 frequency[i] = tempint;
                 return;
             }
