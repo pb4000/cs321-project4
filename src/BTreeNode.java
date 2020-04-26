@@ -65,7 +65,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
     // if array is full, returns false
     // inserts a new value at the end of each array
     // sorts the arrays
-    
+
     // add option to search for where added value belongs
     // i.e. return child pointer of where to add, or placxes value in array
     public boolean add(long newValue) {
@@ -267,19 +267,9 @@ public class BTreeNode implements Comparable<BTreeNode> {
         output += add10Spaces(getTotalObjects()) + "\n";
         output += add10Spaces(getTotalChildren()) + "\n";
         for (int i = 0; i < degree + 1; i++) {
-            // if (childPointers[i] != -1) {
-            //     output += addZeros(childPointers[i]) + "\n";
-            // } else {
-            //     output += addZeros(-1) + "\n";
-            // }
             output += add10Spaces(childPointers[i]) + "\n";
         }
         for (int i = 0; i < degree; i++) {
-            // if (values[i] != -1L) {
-            //     output += addZeros(frequency[i]) + " " + addSpaces(valueToString(values[i])) + "\n";
-            // } else {
-            //     output += addZeros(-1) + " " + addSpaces("-1") + "\n";
-            // }
             output += add10Spaces(frequency[i]) + " " + add62Spaces(valueToString(values[i])) + "\n";
         }
         return output;
