@@ -19,7 +19,7 @@ public class Parser {
     
         // calls BTreeNode.toString
         public static String nodeToFile(BTreeNode node){
-
+            
         }
     
         // converts binary long to String of DNA
