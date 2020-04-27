@@ -1,19 +1,21 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Parser {
     BTreeNode val;
     int degree=0;
     int k=1;
-    String filename="";
+    File filename;
     public Parser(String file,int givenk,int givendegree){
         //why are we passing in a string to the parser constructor?
         //shouldnt this be taking in just the file name, the degree, and the K value?
+        filename=new File(file);
     }
 
         // instantiates a ScannerWrapper and reads file into a BTreeNode object
-        public BTreeNode fileToNode(int lineNumber){
-            ScannerWrapper X = new ScannerWrapper("filename",k,degree);
+        public BTreeNode fileToNode(int lineNumber) throws FileNotFoundException{
+            ScannerWrapper X = new ScannerWrapper(filename,degree,k);
             return X.getNode(lineNumber);
         }
     
