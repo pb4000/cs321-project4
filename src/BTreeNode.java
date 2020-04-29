@@ -75,8 +75,19 @@ public class BTreeNode implements Comparable<BTreeNode> {
                 return true;
             }
         }
-        if (isFull())
-            return false;
+        if (isFull()) {
+            if (getTotalChildren() == 0) {
+                return false;
+            } else {
+
+            }
+        } else {
+            if (getTotalChildren() == 0) {
+
+            } else {
+                
+            }
+        }
         values[values.length - 1] = newValue;
         frequency[frequency.length - 1] = 1;
         sort();
