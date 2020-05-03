@@ -3,11 +3,6 @@ public interface GeneBankCreateBTree {
 
 }
 
-// reads from given file and converts DNA to binary
-public interface FileReader {
-
-}
-
 // do in sprint 2
 // wrapper for Scanner 
 public interface ScannerWrapper {

@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+
 /**
  * Organize values and add methods within BTreeNode? Or create BTree driver
  * class to create and manage nodes? Probably within BTreeNode. Consult Wesley.
@@ -13,7 +16,8 @@
 public class BTreeNode implements Comparable<BTreeNode> {
     private int[] childPointers;
     // store values as numbers converted from binary
-    // to convert back, convert value to binary, then fill in preceeding 0s based on k
+    // to convert back, convert value to binary, then fill in preceeding 0s based on
+    // k
     long[] values;
     int[] frequency;
     private int selfPointer;
@@ -21,10 +25,13 @@ public class BTreeNode implements Comparable<BTreeNode> {
     private int k;
     private int degree;
     // total number of lines each node takes up on the disk
-    // 5 lines of metadata, degree + 1 lines of child pointers, degree lines of values stored
+    // 5 lines of metadata, degree + 1 lines of child pointers, degree lines of
+    // values stored
     private int nodeDiskSize;
+    private File file;
 
-    public BTreeNode(int k, int degree, int selfPointer, int parentPointer) {
+    public BTreeNode(File file, int k, int degree, int selfPointer, int parentPointer) {
+        this.file = file;
         this.k = k;
         this.degree = degree;
         this.selfPointer = selfPointer;
@@ -38,7 +45,9 @@ public class BTreeNode implements Comparable<BTreeNode> {
         nodeDiskSize = 5 + (2 * degree) + 1;
     }
 
-    public BTreeNode(int k, int degree, int selfPointer, int parentPointer, long[] values, int[] frequency, int[] childPointers) {
+    public BTreeNode(File file, int k, int degree, int selfPointer, int parentPointer, long[] values, int[] frequency,
+            int[] childPointers) {
+        this.file = file;
         this.k = k;
         this.degree = degree;
         this.selfPointer = selfPointer;
@@ -49,7 +58,8 @@ public class BTreeNode implements Comparable<BTreeNode> {
         nodeDiskSize = 5 + (2 * degree) + 1;
     }
 
-    public BTreeNode(int k, int degree) {
+    public BTreeNode(File file, int k, int degree) {
+        this.file = file;
         this.k = k;
         this.degree = degree;
         selfPointer = parentPointer = -1;
@@ -62,36 +72,113 @@ public class BTreeNode implements Comparable<BTreeNode> {
         nodeDiskSize = 5 + (2 * degree) + 1;
     }
 
-    // if array is full, returns false
-    // inserts a new value at the end of each array
-    // sorts the arrays
+    /**
+     * Attempts to add newValue to node
+     * 
+     * IMPORTANT: Before running this method, check if node is full If it is, split
+     * it, write the changes to the disk, then try again
+     * 
+     * Output Definitions: 0 = successfully added to self -1 = not added because
+     * node is full any other int = child pointer of where to attempt to add next
+     * 
+     * @param newValue
+     * @return
+     */
+    public int add(long newValue) {
+        // if the node is full, return -1
+        if (isFull()) {
+            return -1;
+        }
 
-    // add option to search for where added value belongs
-    // i.e. return child pointer of where to add, or placxes value in array
-    public boolean add(long newValue) {
+        // if newValue already exists in node, increment frequency and return 0
         for (int i = 0; i < degree; i++) {
             if (values[i] == newValue) {
                 frequency[i]++;
-                return true;
+                return 0;
             }
         }
-        if (isFull()) {
-            if (getTotalChildren() == 0) {
-                return false;
-            } else {
 
-            }
-        } else {
-            if (getTotalChildren() == 0) {
+        // if newValue belongs in the last child node
+        if (childPointers[degree] != -1 && newValue > values[degree - 1]) {
+            return childPointers[degree];
+        }
 
-            } else {
-                
+        // if newValue belongs in the first child node
+        if (childPointers[0] != -1 && newValue < values[0]) {
+            return childPointers[0];
+        }
+
+        // if newValue belongs in a child node, return that child node's pointer
+        for (int i = 1; i < degree; i++) {
+            // if there is a child node
+            if (childPointers[i] != -1) {
+                if (values[i] != -1) {
+                    // if newValue belongs between the surrounding values
+                    if (newValue > values[i - 1] && newValue < values[i]) {
+                        return childPointers[i];
+                    }
+                } else {
+                    return childPointers[i];
+                }
             }
         }
+
+        // add newValue to the end of the array and sort
         values[values.length - 1] = newValue;
         frequency[frequency.length - 1] = 1;
         sort();
-        return true;
+        return 0;
+    }
+
+    /**
+     * Searches for target value Functions like add method
+     * 
+     * OUTPUT DEFINITIONS: 0 = contained in this node -1 = value not in tree any
+     * other int = child node pointer of where to look
+     * 
+     * @param target
+     * @return
+     */
+    public int whereIs(long target) {
+        // check this node
+        for (int i = 0; i < degree; i++) {
+            if (values[i] == -1) {
+                break;
+            }
+            if (values[i] == target) {
+                return 0;
+            }
+        }
+
+        // check child nodes
+
+        // if target belongs in the last child node
+        if (childPointers[degree] != -1 && target > values[degree - 1]) {
+            return childPointers[degree];
+        }
+
+        // if target belongs in the first child node
+        if (childPointers[0] != -1 && target < values[0]) {
+            return childPointers[0];
+        }
+
+        // if target belongs in a child node, return that child node's pointer
+        for (int i = 1; i < degree; i++) {
+            // if there is a child node
+            if (childPointers[i] != -1) {
+                if (values[i] != -1) {
+                    // if target belongs between the surrounding values
+                    if (target > values[i - 1] && target < values[i]) {
+                        return childPointers[i];
+                    }
+                } else {
+                    return childPointers[i];
+                }
+            }
+        }
+
+        // value is not in this tree
+        return -1;
     }
 
     // returns true if the node is full
@@ -100,14 +187,11 @@ public class BTreeNode implements Comparable<BTreeNode> {
     }
 
     /**
-     * If node is not full, return null.
-     * If degree is 1, return null.
-     * If degree is 2, keep lesser value in this node and return a right child node with the greater value.
-     * Moves middle and right children to new child node. 
-     * If degree >= 3
-     * Split values in half, keeping one for this node 
-     * Make 2 new child nodes with the other values
-     * Return the child nodes in an array 
+     * If node is not full, return null. If degree is 1, return null. If degree is
+     * 2, keep lesser value in this node and return a right child node with the
+     * greater value. Moves middle and right children to new child node. If degree
+     * >= 3 Split values in half, keeping one for this node Make 2 new child nodes
+     * with the other values Return the child nodes in an array
      */
     public BTreeNode[] split() {
         BTreeNode[] arrayOut;
@@ -130,10 +214,12 @@ public class BTreeNode implements Comparable<BTreeNode> {
             // 2. assign child pointers
             childChildPointers[0] = childPointers[1];
             childChildPointers[1] = childPointers[2];
-            childPointers[1] = ScannerWrapper.getNextPointer();
+            ScannerWrapper wrapper = new ScannerWrapper(file, degree, k);
+            childPointers[1] = wrapper.getNextPointer();
             childPointers[2] = -1;
             // 3. instantiate BTreeNode
-            arrayOut[0] = new BTreeNode(k, degree, childPointers[1], selfPointer, childValues, childFrequency, childChildPointers);
+            arrayOut[0] = new BTreeNode(file, k, degree, childPointers[1], selfPointer, childValues, childFrequency,
+                    childChildPointers);
         } else {
             // 0. initialize variables
             long[] leftValues = new long[degree];
@@ -171,7 +257,8 @@ public class BTreeNode implements Comparable<BTreeNode> {
                         childPointers[i] = -1;
                     }
                 } else if (i == middle && childPointers[i] != -1) {
-                    // if the middle childPointer exists, that means the subtree is less than the mdiddle value
+                    // if the middle childPointer exists, that means the subtree is less than the
+                    // mdiddle value
                     // therefore, must be assign to left (smaller) subtree
                     leftChildPointers[i] = childPointers[i];
                     childPointers[i] = -1;
@@ -183,11 +270,14 @@ public class BTreeNode implements Comparable<BTreeNode> {
             frequency[0] = frequency[middle];
             frequency[middle] = -1;
             // assign next childPointer
-            childPointers[0] = ScannerWrapper.getNextPointer();
+            ScannerWrapper wrapper = new ScannerWrapper(file, degree, k);
+            childPointers[0] = wrapper.getNextPointer();
             childPointers[1] = childPointers[0] + nodeDiskSize;
             // 2. instantiate BTreeNodes
-            arrayOut[0] = new BTreeNode(k, degree, childPointers[0], selfPointer, leftValues, leftFrequency, leftChildPointers);
-            arrayOut[1] = new BTreeNode(k, degree, childPointers[1], selfPointer, rightValues, rightFrequency, rightChildPointers);
+            arrayOut[0] = new BTreeNode(file, k, degree, childPointers[0], selfPointer, leftValues, leftFrequency,
+                    leftChildPointers);
+            arrayOut[1] = new BTreeNode(file, k, degree, childPointers[1], selfPointer, rightValues, rightFrequency,
+                    rightChildPointers);
         }
         return arrayOut;
     }
@@ -233,7 +323,8 @@ public class BTreeNode implements Comparable<BTreeNode> {
     public int getTotalObjects() {
         int totalObjects = 0;
         for (int i = 0; i < degree; i++) {
-            // what if stored value is 000000? use size k to infer values stored, but how to discern empty vs 000000?
+            // what if stored value is 000000? use size k to infer values stored, but how to
+            // discern empty vs 000000?
             // default array filled with -1?
             if (values[i] != -1L)
                 totalObjects++;
@@ -337,12 +428,14 @@ public class BTreeNode implements Comparable<BTreeNode> {
         for (int i = 0; i < degree + 1; i++) {
             childPointers[i] = -1;
         }
-        for (int i = 0; i < degree + 1; i++) {  // iterate through childPointers
-            if (temp[i] != -1) {   // if a pointer is stored here
-                tempNode = ScannerWrapper.getNode(temp[i]);
-                if (i == degree) {  // if we are at the end
-                    if (tempNode.getValues()[0] < values[i - 1]) {  // if the last child pointer does not belong there
-                        for (int k = 0; k < degree + 1; k++) {  // iterate until you find where it belongs
+        ScannerWrapper wrapper = new ScannerWrapper(file, degree, k);
+        for (int i = 0; i < degree + 1; i++) { // iterate through childPointers
+            if (temp[i] != -1) { // if a pointer is stored here
+                tempNode = wrapper.getNode(temp[i]);
+                if (i == degree) { // if we are at the end
+                    if (tempNode.getValues()[0] < values[i - 1]) { // if the last child pointer does not belong
+                                                                   // there
+                        for (int k = 0; k < degree + 1; k++) { // iterate until you find where it belongs
                             if (k == degree - 1) {
                                 childPointers[degree] = tempNode.getSelfPointer();
                                 break;
@@ -356,11 +449,15 @@ public class BTreeNode implements Comparable<BTreeNode> {
                                 break;
                             }
                         }
-                        childPointers[i] = -1;  // reset the value of that child pointer to empty
+                        childPointers[i] = -1; // reset the value of that child pointer to empty
 
                     }
-                } else if (tempNode.getValues()[0] > values[i] || tempNode.getValues()[0] < values[i - 1]) {  // if that pointer does not belong there
-                    for (int k = 0; k < degree + 1; k++) {  // iterate until you find where it belongs
+                } else if (tempNode.getValues()[0] > values[i] || tempNode.getValues()[0] < values[i - 1]) { // if that
+                                                                                                             // pointer
+                                                                                                             // does not
+                                                                                                             // belong
+                                                                                                             // there
+                    for (int k = 0; k < degree + 1; k++) { // iterate until you find where it belongs
                         if (k == degree - 1) {
                             childPointers[degree] = tempNode.getSelfPointer();
                             break;
@@ -374,7 +471,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
                             break;
                         }
                     }
-                    childPointers[i] = -1;  // reset the value of that child pointer to empty
+                    childPointers[i] = -1; // reset the value of that child pointer to empty
                 }
             }
         }
