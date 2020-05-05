@@ -1,0 +1,35 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-GeneBankSearch<cs321-project4_f25af2d>",
+            "request": "launch",
+            "mainClass": "GeneBankSearch",
+            "projectName": "cs321-project4_f25af2d"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-HW3<cs321-project4_f25af2d>",
+            "request": "launch",
+            "mainClass": "HW3",
+            "projectName": "cs321-project4_f25af2d"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Testing<cs321-project4_f25af2d>",
+            "request": "launch",
+            "mainClass": "Testing",
+            "projectName": "cs321-project4_f25af2d"
+        }
+    ]
+}
