@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.FileNotFoundException;
 
 /**
  * Organize values and add methods within BTreeNode? Or create BTree driver
@@ -29,6 +28,14 @@ public class BTreeNode implements Comparable<BTreeNode> {
     // values stored
     private int nodeDiskSize;
     private File file;
+
+    /**
+     * Used exclusively in cache for finding the real node
+     * @param selfPointer
+     */
+    public BTreeNode(int selfPointer) {
+        this.selfPointer = selfPointer;
+    }
 
     public BTreeNode(File file, int k, int degree, int selfPointer, int parentPointer) {
         this.file = file;
@@ -86,7 +93,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
      */
     public int add(long newValue) {
         // if the node is full, return -1
-        if (isFull()) {
+        if (isFull() && degree > 1) {
             return -1;
         }
 
@@ -282,6 +289,10 @@ public class BTreeNode implements Comparable<BTreeNode> {
         return arrayOut;
     }
 
+    public boolean equals(BTreeNode node) {
+        return selfPointer == node.getSelfPointer();
+    }
+
     public int compareTo(BTreeNode n) {
         if (values[0] - n.getValues()[0] < 0) {
             return 1;
@@ -290,6 +301,15 @@ public class BTreeNode implements Comparable<BTreeNode> {
         } else {
             return 0;
         }
+    }
+
+    public int frequencyOf(long target) {
+        for (int i = 0; i < degree && values[i] != -1; i++) {
+            if (values[i] == target) {
+                return frequency[i];
+            }
+        }
+        return -1;
     }
 
     public long[] getValues() {

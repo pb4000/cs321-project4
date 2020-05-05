@@ -21,6 +21,21 @@ int nodeDiskSize;
         nodeDiskSize = 5 + (2 * degree) + 1;
     }
 
+    public static int[] getMetadata(File f) {
+        int[] output = new int[4];
+        try {
+            Scanner scan = new Scanner(f);
+            for (int i = 0; i < 4; i++) {
+                output[i] = scan.nextInt();
+            }
+            scan.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return output;
+    }
+
     // returns next available node pointer. Used in split method in BTreeNode
     public int getNextPointer() {
         try {

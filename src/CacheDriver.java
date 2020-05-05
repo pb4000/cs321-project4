@@ -42,7 +42,7 @@ public class CacheDriver<T> {
         }
         this.level = level;
 
-        cache1 = new Cache(maxSize1);
+        cache1 = new Cache<T>(maxSize1);
         c1Hits = c2Hits = c1Refs = c2Refs = 0;
     }
 
@@ -51,9 +51,16 @@ public class CacheDriver<T> {
             throw new IllegalArgumentException("Illegal parameters");
         }
         this.level = level;
-        cache1 = new Cache(maxSize1);
-        cache2 = new Cache(maxSize2);
+        cache1 = new Cache<T>(maxSize1);
+        cache2 = new Cache<T>(maxSize2);
         c1Hits = c2Hits = c1Refs = c2Refs = 0;
+    }
+
+    public void add(T object) {
+        cache1.addToTop(object);
+        if (level == 2) {
+            cache2.addToTop(object);
+        }
     }
 
     /**
@@ -62,24 +69,27 @@ public class CacheDriver<T> {
      * @param object
      * @return
      */
-    public void search(T object) {
+    public T search(T object) {
         c1Refs++;
-        if (cache1.search(object) != null) {    // searches for specified object and brings it to top of cache
+        T output = cache1.search(object);
+        if (output != null) {    // searches for specified object and brings it to top of cache
             c1Hits++;
             if (level == 2) {
                 cache2.search(object);
             }
-            return;
-        } else {
-            cache1.addToTop(object);
+            return output;
         }
         if (level == 2) {
             c2Refs++;
-            if (cache2.search(object) != null) {
+            output = cache2.search(object);
+            if (output != null) {
                 c2Hits++;
+                cache1.addToTop(output);
+                return output;
             } else {
-                cache2.addToTop(object);
+                return null;
             }
         }
+        return null;
     }
 }
