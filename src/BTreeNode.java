@@ -361,38 +361,22 @@ public class BTreeNode implements Comparable<BTreeNode> {
         return totalChildren;
     }
 
-    private String add10Spaces(int input) {
-        String output = "";
-        for (int i = 0; i + Integer.toString(input).length() < 10; i++) {
-            output += " ";
-        }
-        return output + input;
-    }
-
-    private String add62Spaces(String input) {
-        String output = "";
-        for (int i = 0; i + input.length() < 62; i++) {
-            output += " ";
-        }
-        return output + input;
-    }
-
     @Override
     public String toString() {
         String output = "";
-        output += add10Spaces(selfPointer) + "\n";
+        output += Parser.add10Spaces(selfPointer) + "\n";
         if (getTotalChildren() == 0)
             output += "1\n";
         else
             output += "0\n";
-        output += add10Spaces(parentPointer) + "\n";
-        output += add10Spaces(getTotalObjects()) + "\n";
-        output += add10Spaces(getTotalChildren()) + "\n";
+        output += Parser.add10Spaces(parentPointer) + "\n";
+        output += Parser.add10Spaces(getTotalObjects()) + "\n";
+        output += Parser.add10Spaces(getTotalChildren()) + "\n";
         for (int i = 0; i < degree + 1; i++) {
-            output += add10Spaces(childPointers[i]) + "\n";
+            output += Parser.add10Spaces(childPointers[i]) + "\n";
         }
         for (int i = 0; i < degree; i++) {
-            output += add10Spaces(frequency[i]) + " " + add62Spaces(valueToString(values[i])) + "\n";
+            output += Parser.add10Spaces(frequency[i]) + " " + Parser.add62Spaces(valueToString(values[i])) + "\n";
         }
         return output;
     }

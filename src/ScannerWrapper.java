@@ -8,6 +8,16 @@ int degree;
 Scanner fileScan;
 File file;
 int nodeDiskSize;
+Scanner gbkScanner;
+
+    public ScannerWrapper(File f) {
+        try {
+            gbkScanner = new Scanner(f);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
     public ScannerWrapper(File fileIn, int degree, int k) {
         if (!fileIn.exists()) {
@@ -19,6 +29,10 @@ int nodeDiskSize;
         this.degree = degree;
         this.k = k;
         nodeDiskSize = 5 + (2 * degree) + 1;
+    }
+
+    public void close() {
+        gbkScanner.close();
     }
 
     public static int[] getMetadata(File f) {

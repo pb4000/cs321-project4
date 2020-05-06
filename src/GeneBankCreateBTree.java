@@ -11,8 +11,6 @@ public class GeneBankCreateBTree {
     ScannerWrapper scan;
     int k;
     int degree;
-    String btreeFileName;
-
 
     public static void main(String[] args) {
         GeneBankCreateBTree g = new GeneBankCreateBTree(args);

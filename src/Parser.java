@@ -64,4 +64,30 @@ public class Parser {
         }
         return Long.parseLong(bin, 2);
     }
+
+    /**
+     * Adds 10 spaces in order to allocate a constant size on the disk.
+     * @param input
+     * @return
+     */
+    public static String add10Spaces(int input) {
+        String output = "";
+        for (int i = 0; i + Integer.toString(input).length() < 10; i++) {
+            output += " ";
+        }
+        return output + input;
+    }
+
+    /**
+     * Adds 62 spoaces in order to allocate a constant size on the disk.
+     * @param input
+     * @return
+     */
+    public static String add62Spaces(String input) {
+        String output = "";
+        for (int i = 0; i + input.length() < 62; i++) {
+            output += " ";
+        }
+        return output + input;
+    }
 }
