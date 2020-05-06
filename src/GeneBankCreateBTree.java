@@ -13,6 +13,7 @@ public class GeneBankCreateBTree {
     int k;
     int degree;
     Scanner queryScan;
+    ScannerWrapper gbkScan; // initialize this
 
     public static void main(String[] args) {
         GeneBankCreateBTree g = new GeneBankCreateBTree(args);
