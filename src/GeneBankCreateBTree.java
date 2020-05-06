@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class GeneBankCreateBTree {
     String[] args;
@@ -11,6 +12,8 @@ public class GeneBankCreateBTree {
     ScannerWrapper scan;
     int k;
     int degree;
+    String btreeFile;
+    Scanner gbkreader;
 
     public static void main(String[] args) {
         GeneBankCreateBTree g = new GeneBankCreateBTree(args);
@@ -62,14 +65,28 @@ public class GeneBankCreateBTree {
             e.printStackTrace();
             System.exit(1);
         }
-        btreeFileName = args[2] + "." + 
+        btreeFile = args[2] + ".btree.data." + k + "." +degree;
     }
 
     public void startPrint(){
 
     }
 
-    public void readGBK(){
+    public void readGBK() throws FileNotFoundException{
+        gbkreader = new Scanner(gbkfile);
+        String gbkLine = gbkreader.nextLine();
+        boolean start=false;
+        while(!start){
+            gbkLine = gbkreader.nextLine();
+            if(gbkLine.trim()=="ORIGIN"){
+                start=true;
+            }
+        }
+
+        while(gbkreader.hasNextLine()&&gbkLine.trim()=="//"){
+
+        }
+
 
     }
 
