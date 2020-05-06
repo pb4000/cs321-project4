@@ -37,7 +37,7 @@ public class GeneBankCreateBTree {
         // with/without cache
         if (args[0].equals("1")) {
             // if cache size is not given, end
-            if (args.length == 3) {
+            if (args.length == 4) {
                 printUsage();
                 System.exit(1);
             }
@@ -66,12 +66,16 @@ public class GeneBankCreateBTree {
         }
     }
 
+    public void startPrint(){
+
+    }
+
     public void readGBK(){
 
     }
 
     public static void printUsage() {
         System.out.println(
-                "Usage:\njava GeneBankCreateBTree <0/1(no/with Cache)> <btree file> <query file> [<cache size>] [<debug level>]");
+                "Usage:\njava GeneBankCreateBTree <0/1(no/with Cache)> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>]");
     }
 }
