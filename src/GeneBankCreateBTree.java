@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 public class GeneBankCreateBTree {
     String[] args;
@@ -12,7 +11,8 @@ public class GeneBankCreateBTree {
     ScannerWrapper scan;
     int k;
     int degree;
-    Scanner queryScan;
+    String btreeFileName;
+
 
     public static void main(String[] args) {
         GeneBankCreateBTree g = new GeneBankCreateBTree(args);
@@ -64,6 +64,7 @@ public class GeneBankCreateBTree {
             e.printStackTrace();
             System.exit(1);
         }
+        btreeFileName = args[2] + "." + 
     }
 
     public void startPrint(){
