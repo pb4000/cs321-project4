@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class GeneBankCreateBTree {
     String[] args;
-    boolean usingCache;
+    boolean usingCache=false;
     CacheDriver<BTreeNode> cache;
     File gbkfile;
     int debugLevel;
@@ -113,23 +113,36 @@ public class GeneBankCreateBTree {
             BTreeNode current=root;
             while(addtype!=0){
                 if(addtype==-1){
-                    BTreeNode [] spliter = new BTreeNode[3];
-                    spliter = root.split();
-                    PrintWrapper.writeNode(spliter[2],outFile);
+                    BTreeNode [] spliter = new BTreeNode[2];
+                    spliter = current.split();
+                    PrintWrapper.writeNode(current,outFile);
                     PrintWrapper.writeNode(spliter[0],outFile);
                     PrintWrapper.writeNode(spliter[1],outFile);
                     //write the parent to current parent location
                     //wirte the left child to the next availible possition
                     //write the right child to the next availible possition
-
+                    if(usingCache){
+                        cache.add(current);
+                        cache.add(spliter[0]);
+                        cache.add(spliter[1]);
+                    }
 
                     //write to disk all three nodes TODO for CACHE
 
-                    addtype = root.add(Parser.dnaToDecimal(valToNode));
+                    addtype = current.add(Parser.dnaToDecimal(valToNode));
                     //then add again
                 }else{
-                    // changes location of current
-                    //
+                    if(usingCache){
+                        //uses cache to make changes
+                        current = cache.search(new BTreeNode(addtype));
+                        if(current==null){
+                            current =  scan.getNode(addtype);
+                        }
+                        addtype = current.add(Parser.dnaToDecimal(valToNode));
+                    }else{
+                        current = scan.getNode(addtype);
+                        addtype = current.add(Parser.dnaToDecimal(valToNode));
+                    }
                 }
             }
             PrintWrapper.writeNode(current,outFile);
