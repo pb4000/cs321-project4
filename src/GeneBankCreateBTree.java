@@ -71,6 +71,7 @@ public class GeneBankCreateBTree {
         outFile = new File(btreeFile);
         root = new BTreeNode(outFile, k, degree, 5, -1);
         PrintWrapper.createFile(k, degree, root, outFile);
+        scan = new ScannerWrapper(outFile, degree, k);
     }
 
     public void readGBK() throws FileNotFoundException{
@@ -83,10 +84,11 @@ public class GeneBankCreateBTree {
 
             if(gbkLine.trim().equals("ORIGIN")){
                 start=true;
+                gbkLine = gbkreader.nextLine();
             }
         }
 
-        while(gbkreader.hasNextLine()&&gbkLine.trim()=="//"){
+        while(gbkLine.trim()!="//"){
             Scanner linereader = new Scanner(gbkLine);
 
             while(linereader.hasNext()){
