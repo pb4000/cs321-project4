@@ -12,7 +12,11 @@ Scanner gbkScanner;
 
     public ScannerWrapper(File f) {
         try {
+            if (!f.exists()) {
+                throw new FileNotFoundException("Given file does not exist");
+            }
             gbkScanner = new Scanner(f);
+            file = f;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.exit(1);
@@ -64,7 +68,7 @@ Scanner gbkScanner;
             lineCount++;
         }
         fileScan.close();
-        return lineCount;
+        return ++lineCount;
     }
 
     public BTreeNode getNode(int pointer) {
@@ -114,9 +118,17 @@ Scanner gbkScanner;
         }
         long[] values = new long[degree];
         int[] frequency = new int[degree];
+        String temp;
+        /**
+         * Added special case for -1
+         */
         for (int i = 0; i < degree; i++) {
             frequency[i] = fileScan.nextInt();
-            values[i] = Long.parseLong(fileScan.next(), 2);
+            temp = fileScan.next();
+            if (Long.parseLong(temp) == -1)
+                values[i] = -1;
+            else
+                values[i] = Long.parseLong(temp, 2);
         }
 
         fileScan.close();

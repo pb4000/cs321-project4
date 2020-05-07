@@ -82,9 +82,9 @@ public class Parser {
      */
     public static String add62Spaces(String input) {
         String output = "";
-        for (int i = 0; i + input.length() < 62; i++) {
+        for (int i = 0; i + input.length() < 61; i++) {
             output += " ";
         }
-        return output + input;
+        return output + " " + input;
     }
 }

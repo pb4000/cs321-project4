@@ -14,8 +14,21 @@ public class Testing {
         // System.out.println(input.nextInt());
         // System.out.println(input.nextLong());
         // input.close();
-        RandomAccessFile f = new RandomAccessFile(new File("hehe"), "rw");
-        f.write("hello".getBytes());
+        // PrintWrapper.createFile(6, 7, new BTreeNode(new File("lol"), 6, 7, 5, -1), new File("lol"));
+        // ScannerWrapper scan = new ScannerWrapper(new File("lol"), 7, 6);
+        // System.out.println(scan.getNextPointer());
+
+        System.out.println(Long.toBinaryString(-1));
+
+        RandomAccessFile f = new RandomAccessFile(new File("jajaja"), "rw");
+        BTreeNode node = new BTreeNode(new File("lol"), 6, 7, 5, -1);
+        System.out.println(node.toString());
+        f.write(node.toString().getBytes());
+        node.add(10);
+        System.out.println(node.toString());
+        f.close();
+        f = new RandomAccessFile(new File("jajaja"), "rw");
+        f.write(node.toString().getBytes());
         f.close();
     }
 }

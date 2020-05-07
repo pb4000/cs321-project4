@@ -46,9 +46,9 @@ public class BTreeNode implements Comparable<BTreeNode> {
         childPointers = new int[degree + 1];
         values = new long[degree];
         frequency = new int[degree];
-        initEmptyValues(childPointers);
-        initEmptyValues(values);
-        initEmptyValues(frequency);
+        childPointers = initEmptyValues(childPointers);
+        values = initEmptyValues(values);
+        frequency = initEmptyValues(frequency);
         nodeDiskSize = 5 + (2 * degree) + 1;
     }
 
@@ -73,9 +73,9 @@ public class BTreeNode implements Comparable<BTreeNode> {
         childPointers = new int[degree + 1];
         values = new long[degree];
         frequency = new int[degree];
-        initEmptyValues(childPointers);
-        initEmptyValues(values);
-        initEmptyValues(frequency);
+        childPointers = initEmptyValues(childPointers);
+        values = initEmptyValues(values);
+        frequency = initEmptyValues(frequency);
         nodeDiskSize = 5 + (2 * degree) + 1;
     }
 
@@ -221,13 +221,13 @@ public class BTreeNode implements Comparable<BTreeNode> {
             long[] childValues = new long[degree];
             int[] childFrequency = new int[degree];
             int[] childChildPointers = new int[degree + 1];
-            initEmptyValues(childValues);
-            initEmptyValues(childFrequency);
-            initEmptyValues(childChildPointers);
+            childValues = initEmptyValues(childValues);
+            childFrequency = initEmptyValues(childFrequency);
+            childChildPointers = initEmptyValues(childChildPointers);
             arrayOut = new BTreeNode[1];
             // 1. assign values and frequency
             childValues[0] = values[1];
-            values[1] = -1L;
+            values[1] = -1;
             childFrequency[0] = frequency[1];
             frequency[1] = -1;
             // 2. assign child pointers
@@ -247,19 +247,19 @@ public class BTreeNode implements Comparable<BTreeNode> {
             int[] rightFrequency = new int[degree];
             int[] leftChildPointers = new int[degree + 1];
             int[] rightChildPointers = new int[degree + 1];
-            initEmptyValues(leftValues);
-            initEmptyValues(rightValues);
-            initEmptyValues(leftFrequency);
-            initEmptyValues(rightFrequency);
-            initEmptyValues(leftChildPointers);
-            initEmptyValues(rightChildPointers);
+            leftValues = initEmptyValues(leftValues);
+            rightValues = initEmptyValues(rightValues);
+            leftFrequency = initEmptyValues(leftFrequency);
+            rightFrequency = initEmptyValues(rightFrequency);
+            leftChildPointers = initEmptyValues(leftChildPointers);
+            rightChildPointers = initEmptyValues(rightChildPointers);
             arrayOut = new BTreeNode[2];
             // 1. assign values and frequency, as well as child pointers if possible
             int middle = values.length / 2;
             for (int i = 0; i < degree; i++) {
                 if (i < middle) {
                     leftValues[i] = values[i];
-                    values[i] = -1L;
+                    values[i] = -1;
                     leftFrequency[i] = frequency[i];
                     frequency[i] = -1;
                     if (childPointers[i] != -1) {
@@ -268,7 +268,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
                     }
                 } else if (i > middle) {
                     rightValues[i - middle - 1] = values[i];
-                    values[i] = -1L;
+                    values[i] = -1;
                     rightFrequency[i - middle - 1] = frequency[i];
                     frequency[i] = -1;
                     if (childPointers[i] != -1) {
@@ -285,7 +285,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
             }
             // move last value to beginning
             values[0] = values[middle];
-            values[middle] = -1L;
+            values[middle] = -1;
             frequency[0] = frequency[middle];
             frequency[middle] = -1;
             // assign next childPointer
@@ -388,12 +388,20 @@ public class BTreeNode implements Comparable<BTreeNode> {
             output += Parser.add10Spaces(childPointers[i]) + "\n";
         }
         for (int i = 0; i < degree; i++) {
-            output += Parser.add10Spaces(frequency[i]) + " " + Parser.add62Spaces(valueToString(values[i])) + "\n";
+            output += Parser.add10Spaces(frequency[i]) + " " + Parser.add62Spaces(valueToString(values[i]));
+            if (i != degree - 1)
+                output +="\r";
         }
         return output;
     }
 
+    /**
+     * Added special case for -1
+     */
     private String valueToString(long input) {
+        if (input == -1) {
+            return Long.toString(-1);
+        }
         String output = "";
         String binary = Long.toBinaryString(input);
         for (int i = binary.length(); i < k * 2; i++)
@@ -402,17 +410,21 @@ public class BTreeNode implements Comparable<BTreeNode> {
     }
 
     // initializes given int array to -1
-    private static void initEmptyValues(int[] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            arr[i] = -1;
+    private static int[] initEmptyValues(int[] arr) {
+        int[] output = arr;
+        for (int i = 0; i < output.length; i++) {
+            output[i] = -1;
         }
+        return output;
     }
 
     // initializes given int array to -1
-    private static void initEmptyValues(long[] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            arr[i] = -1L;
+    private static long[] initEmptyValues(long[] arr) {
+        long[] output = arr;
+        for (int i = 0; i < output.length; i++) {
+            output[i] = -1;
         }
+        return output;
     }
 
     // sort values and frequency based on ordering of values
@@ -421,10 +433,10 @@ public class BTreeNode implements Comparable<BTreeNode> {
         long templong = values[degree - 1];
         int tempint = frequency[degree - 1];
         for (int i = 0; i < degree; i++) {
-            if (values[i] == -1L) {
+            if (values[i] == -1) {
                 values[i] = templong;
                 frequency[i] = tempint;
-                values[degree - 1] = -1L;
+                values[degree - 1] = -1;
                 frequency[degree - 1] = -1;
                 return;
             }

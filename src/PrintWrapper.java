@@ -26,6 +26,14 @@ public class PrintWrapper {
                 }
                 f.readLine();
             }
+            /**
+             * If writing to the end of the file, start on a new line
+             */
+            ScannerWrapper wrap = new ScannerWrapper(file);
+            if (node.getSelfPointer() == wrap.getNextPointer()) {
+                System.out.println("match");
+                f.write("\n".getBytes());
+            }
             f.write(node.toString().getBytes());
             f.close();
             scan.close();
