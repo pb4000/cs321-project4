@@ -8,13 +8,13 @@ public class Node<T> {
 
     private Node<T> previous;
 
-    public Node(T object, Node next, Node previous) {
+    public Node(T object, Node<T> next, Node<T> previous) {
         this.object = object;
         this.next = next;
         this.previous = previous;
     }
 
-    public Node(T object, Node next) {
+    public Node(T object, Node<T> next) {
         this.object = object;
         this.next = next;
         previous = null;
