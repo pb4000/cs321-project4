@@ -69,7 +69,7 @@ public class GeneBankCreateBTree {
         }
         btreeFile = args[2] + ".btree.data." + k + "." +degree;
         outFile = new File(btreeFile);
-        root = new BTreeNode(outFile, k, degree);
+        root = new BTreeNode(outFile, k, degree, 5, -1);
         PrintWrapper.createFile(k, degree, root, outFile);
     }
 
@@ -80,7 +80,8 @@ public class GeneBankCreateBTree {
         boolean start=false;
         while(!start){
             gbkLine = gbkreader.nextLine();
-            if(gbkLine.trim()=="ORIGIN"){
+
+            if(gbkLine.trim().equals("ORIGIN")){
                 start=true;
             }
         }
