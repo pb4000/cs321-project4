@@ -98,6 +98,7 @@ public class GeneBankSearch {
     }
 
     public void parseArgs() {
+        usingCache = false;
         // check for correct length
         if (args.length < 3 || args.length > 5) {
             printUsage();
