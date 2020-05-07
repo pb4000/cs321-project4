@@ -28,6 +28,7 @@ public class GeneBankCreateBTree {
 
     public void run() {
         parseArgs();
+        readGBK();
     }
 
     public void parseArgs() {
@@ -72,10 +73,6 @@ public class GeneBankCreateBTree {
         PrintWrapper.createFile(k, degree, root, outFile);
     }
 
-    public void startPrint(){
-
-    }
-
     public void readGBK() throws FileNotFoundException{
         String holdsValue = "";
         gbkreader = new Scanner(gbkfile);
@@ -111,13 +108,25 @@ public class GeneBankCreateBTree {
                 }
                 holdsValue = holdsValue.substring(1);
             }
-
-            if(root==null){
-                //creates root node
-                
-            }else{
-                //creates 
+            int addtype = root.add(Parser.dnaToDecimal(valToNode));
+            while(addtype!=0){
+                if(addtype==-1){
+                    //split
+                    //create BTree[]
+                    //write the parent to current parent location
+                    //wirte the left child to the next availible possition
+                    //write the right child to the next availible possition
+                    //write to disk all three nodes
+                    //then add again
+                }else{
+                    // return the locaiton of the child to check next
+                }
             }
+            //write to disk
+            //write to the last returned location
+            
+
+
         }
             linereader.close();
             gbkLine=gbkreader.nextLine();

@@ -4,8 +4,6 @@ import java.util.Scanner;
 
 public class Parser {
 
-    public Parser(String file, int givenk, int givendegree) {
-    }
 
     // instantiates a ScannerWrapper and reads file into a BTreeNode object
     public static BTreeNode fileToNode(int lineNumber, File file, int degree, int k) throws FileNotFoundException {

@@ -199,6 +199,10 @@ public class BTreeNode implements Comparable<BTreeNode> {
      * greater value. Moves middle and right children to new child node. If degree
      * >= 3 Split values in half, keeping one for this node Make 2 new child nodes
      * with the other values Return the child nodes in an array
+     * 
+     * node at pos 0 is left child
+     * node at pos 1 is right child
+     * node at pos 2 is parent 
      */
     public BTreeNode[] split() {
         BTreeNode[] arrayOut;
