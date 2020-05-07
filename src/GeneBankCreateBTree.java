@@ -116,13 +116,13 @@ public class GeneBankCreateBTree {
                     //write the parent to current parent location
                     //wirte the left child to the next availible possition
                     //write the right child to the next availible possition
-                    //write to disk all three nodes
+                    //write to disk all three nodes TODO CACHE
                     //then add again
                 }else{
                     // return the locaiton of the child to check next
                 }
             }
-            //write to disk
+            //write to disk TODO CACHE
             //write to the last returned location
             
 

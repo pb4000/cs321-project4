@@ -200,6 +200,14 @@ public class BTreeNode implements Comparable<BTreeNode> {
      * >= 3 Split values in half, keeping one for this node Make 2 new child nodes
      * with the other values Return the child nodes in an array
      * 
+     * Used only after the BTreeNode.add method has returned -1 (meaning node is full). 
+     * When degree >= 3, the BTreeNode.split method will return a BTreeNode[] array
+     * of length 2. The node at position 0 is the left child, while the node at position 1 is
+     * the right child. When calling this method, save the returned array. Then, write 
+     * the currently selected node (the one which was just split), and both nodes stored
+     * in the returned array. This should be done BEFORE proceeding with any other changes.
+     * These nodes should all be updated in the cache
+     * 
      * node at pos 0 is left child
      * node at pos 1 is right child
      * node at pos 2 is parent 
