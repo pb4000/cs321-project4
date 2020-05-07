@@ -14,6 +14,7 @@ public class GeneBankCreateBTree {
     int degree;
     String btreeFile="";
     Scanner gbkreader;
+    File outFile;
 
     public static void main(String[] args) {
         GeneBankCreateBTree g = new GeneBankCreateBTree(args);
@@ -66,6 +67,9 @@ public class GeneBankCreateBTree {
             System.exit(1);
         }
         btreeFile = args[2] + ".btree.data." + k + "." +degree;
+        outFile = new File(btreeFile);
+        root = new BTreeNode(outFile, k, degree);
+        PrintWrapper.createFile(k, degree, root, outFile);
     }
 
     public void startPrint(){
@@ -90,17 +94,35 @@ public class GeneBankCreateBTree {
             while(linereader.hasNext()){
                 String next = linereader.next();
                 if(!next.matches("-?(0|[1-9]\\d*)")){
-                    holdsValue+=next.trim();
+                    holdsValue+=next.trim().toUpperCase();
                 }
             }         
 
+            //this should run through the holdsValue until there are not enough locations
+        //this will be moved up
+        while(holdsValue.length()>=k){
+            //this will create new nodes or populate old
+            String valToNode="";
+            for(int i=0;i<k;i++){
+                if(holdsValue.charAt(0)=='N'){
+                    i--;
+                }else{
+                    valToNode+=holdsValue.charAt(0);
+                }
+                holdsValue = holdsValue.substring(1);
+            }
+
+            if(root==null){
+                //creates root node
+                
+            }else{
+                //creates 
+            }
+        }
             linereader.close();
             gbkLine=gbkreader.nextLine();
         }
-        //this should run through the holdsValue until there are not enough locations
-        while(holdsValue.length()>=k){
-            //this will create new nodes
-        }
+        
 
     }
 

@@ -49,13 +49,13 @@ public class PrintWrapper {
      * @param totalNodes
      * @param file
      */
-    public static void createFile(int k, int degree, BTreeNode rootNode, int totalNodes, File file) {
+    public static void createFile(int k, int degree, BTreeNode rootNode, File file) {
         try {
             RandomAccessFile f = new RandomAccessFile(file, "rw");
             f.write(new String(Parser.add10Spaces(k) + "\n").getBytes());
             f.write(new String(Parser.add10Spaces(degree) + "\n").getBytes());
             f.write(new String(Parser.add10Spaces(rootNode.getSelfPointer()) + "\n").getBytes());
-            f.write(new String(Parser.add10Spaces(totalNodes) + "\n").getBytes());
+            f.write(new String(Parser.add10Spaces(1) + "\n").getBytes());
             f.write(rootNode.toString().getBytes());
             f.close();
         } catch (FileNotFoundException e) {
