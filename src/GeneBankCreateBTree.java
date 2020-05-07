@@ -16,7 +16,7 @@ public class GeneBankCreateBTree {
     Scanner gbkreader;
     File outFile;
 
-    public static void main(String[] args) {
+    public static void main(String[] args)throws FileNotFoundException {
         GeneBankCreateBTree g = new GeneBankCreateBTree(args);
         g.run();
     }
@@ -26,7 +26,7 @@ public class GeneBankCreateBTree {
         debugLevel = 0;
     }
 
-    public void run() {
+    public void run()throws FileNotFoundException {
         parseArgs();
         readGBK();
     }
@@ -108,25 +108,32 @@ public class GeneBankCreateBTree {
                 }
                 holdsValue = holdsValue.substring(1);
             }
+            
             int addtype = root.add(Parser.dnaToDecimal(valToNode));
+            BTreeNode current=root;
             while(addtype!=0){
                 if(addtype==-1){
-                    //split
-                    //create BTree[]
+                    BTreeNode [] spliter = new BTreeNode[3];
+                    spliter = root.split();
+                    PrintWrapper.writeNode(spliter[2],outFile);
+                    PrintWrapper.writeNode(spliter[0],outFile);
+                    PrintWrapper.writeNode(spliter[1],outFile);
                     //write the parent to current parent location
                     //wirte the left child to the next availible possition
                     //write the right child to the next availible possition
-                    //write to disk all three nodes TODO CACHE
+
+
+                    //write to disk all three nodes TODO for CACHE
+
+                    addtype = root.add(Parser.dnaToDecimal(valToNode));
                     //then add again
                 }else{
-                    // return the locaiton of the child to check next
+                    // changes location of current
+                    //
                 }
             }
+            PrintWrapper.writeNode(current,outFile);
             //write to disk TODO CACHE
-            //write to the last returned location
-            
-
-
         }
             linereader.close();
             gbkLine=gbkreader.nextLine();
