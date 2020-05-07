@@ -151,8 +151,6 @@ public class GeneBankCreateBTree {
             linereader.close();
             gbkLine=gbkreader.nextLine();
         }
-        
-
     }
 
     public static void printUsage() {
