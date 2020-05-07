@@ -12,7 +12,7 @@ public class GeneBankCreateBTree {
     ScannerWrapper scan;
     int k;
     int degree;
-    String btreeFile;
+    String btreeFile="";
     Scanner gbkreader;
 
     public static void main(String[] args) {
@@ -54,11 +54,11 @@ public class GeneBankCreateBTree {
                 debugLevel = Integer.parseInt(args[4]);
             }
         }
-        // initialize BTree file
+        // initialize degree,k, and root vars
         degree = Integer.parseInt(args[1]);
         k = Integer.parseInt(args[3]);
         root=null;
-        // initialize query file
+        // initialize gck file
         gbkfile = new File(args[2]);
         if (!gbkfile.exists()) {
             FileNotFoundException e = new FileNotFoundException("Given gbk file does not exist.");
@@ -73,6 +73,7 @@ public class GeneBankCreateBTree {
     }
 
     public void readGBK() throws FileNotFoundException{
+        String holdsValue = "";
         gbkreader = new Scanner(gbkfile);
         String gbkLine = gbkreader.nextLine();
         boolean start=false;
@@ -84,9 +85,22 @@ public class GeneBankCreateBTree {
         }
 
         while(gbkreader.hasNextLine()&&gbkLine.trim()=="//"){
+            Scanner linereader = new Scanner(gbkLine);
 
+            while(linereader.hasNext()){
+                String next = linereader.next();
+                if(!next.matches("-?(0|[1-9]\\d*)")){
+                    holdsValue+=next.trim();
+                }
+            }         
+
+            linereader.close();
+            gbkLine=gbkreader.nextLine();
         }
-
+        //this should run through the holdsValue until there are not enough locations
+        while(holdsValue.length()>=k){
+            //this will create new nodes
+        }
 
     }
 
