@@ -31,7 +31,6 @@ public class PrintWrapper {
              */
             ScannerWrapper wrap = new ScannerWrapper(file);
             if (node.getSelfPointer() == wrap.getNextPointer()) {
-                System.out.println("match");
                 f.write("\n".getBytes());
             }
             f.write(node.toString().getBytes());

@@ -76,7 +76,7 @@ Scanner gbkScanner;
         String node = "";
         try {
             fileScan = new Scanner(file);
-            for (int i = 0; i < pointer; i++) {
+            for (int i = 1; i < pointer; i++) {
                 if (fileScan.hasNextLine()) {
                     fileScan.nextLine();
                 } else {
@@ -99,7 +99,7 @@ Scanner gbkScanner;
             e.printStackTrace();
             System.exit(1);
         }
-
+        
         fileScan = new Scanner(node);
         // read string into variables
         int selfPointer = fileScan.nextInt();
@@ -110,8 +110,8 @@ Scanner gbkScanner;
         else
             isLeaf = false;
         int parentPointer = fileScan.nextInt();
-        fileScan.nextLine();
-        fileScan.nextLine();
+        fileScan.nextInt();
+        fileScan.nextInt();
         int[] childPointers = new int[degree + 1];
         for (int i = 0; i < degree + 1; i++) {
             childPointers[i] = fileScan.nextInt();
