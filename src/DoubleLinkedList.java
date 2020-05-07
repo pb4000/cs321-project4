@@ -14,6 +14,17 @@ public class DoubleLinkedList<T> {
         head = current = tail = previous = null;
     }
 
+    public boolean remove(T object) {
+        restart();
+        while (current != null && !current.equals(object)) {
+            next();
+        }
+        if (current == null)
+            return false;
+        else
+            return true;
+    }
+
     public boolean hasNext() {  // true if next node exists
         return current.getNext() != null;
     }

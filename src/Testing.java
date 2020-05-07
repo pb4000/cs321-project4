@@ -14,14 +14,8 @@ public class Testing {
         // System.out.println(input.nextInt());
         // System.out.println(input.nextLong());
         // input.close();
-
-        BTreeNode node = new BTreeNode(6, 3, 13, -1);
-        node.add(17);
-        node.add(3);
-        node.add(17);
-        node.add(24);
-        PrintWrapper.writeNode(node, "haha.txt");
-        node.add(17);
-        PrintWrapper.writeNode(node, "haha.txt");
+        RandomAccessFile f = new RandomAccessFile(new File("hehe"), "rw");
+        f.write("hello".getBytes());
+        f.close();
     }
 }

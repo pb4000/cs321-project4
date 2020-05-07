@@ -45,6 +45,7 @@ public class Cache<T> {
      * @param object
      */
     public void addToTop(T object) {
+        list.remove(object);
         list.addToFront(object);
         if (size == maxSize) {
             list.removeLast();
