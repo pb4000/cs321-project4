@@ -16,8 +16,10 @@ public class DoubleLinkedList<T> {
 
     public boolean remove(T object) {
         restart();
-        while (current != null && !current.equals(object)) {
-            next();
+        while (current != null && !current.getObject().equals(object)) {
+            if (next() == null) {
+                return false;
+            }
         }
         if (current == null)
             return false;

@@ -74,6 +74,7 @@ public class GeneBankCreateBTree {
     }
 
     public void readGBK() throws FileNotFoundException {
+        cache.add(root);
         String holdsValue = "";
         gbkreader = new Scanner(gbkfile);
         String gbkLine = "";
@@ -90,7 +91,7 @@ public class GeneBankCreateBTree {
             while (gbkreader.hasNextLine() && !gbkLine.trim().contains("//")) {
                 gbkLine = gbkreader.nextLine();
                 Scanner linereader = new Scanner(gbkLine);
-
+                System.out.println(gbkLine);
                 while (linereader.hasNext()) {
                     String next = linereader.next();
                     if (!next.matches("-?(0|[1-9]\\d*)")) {
@@ -149,6 +150,10 @@ public class GeneBankCreateBTree {
             }
         }
         gbkreader.close();
+    }
+
+    public void createDump() {
+
     }
 
     public static void printUsage() {

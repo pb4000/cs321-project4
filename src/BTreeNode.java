@@ -313,7 +313,9 @@ public class BTreeNode implements Comparable<BTreeNode> {
         return arrayOut;
     }
 
-    public boolean equals(BTreeNode node) {
+    @Override
+    public boolean equals(Object obj) {
+        BTreeNode node = (BTreeNode) obj;
         return selfPointer == node.getSelfPointer();
     }
 
