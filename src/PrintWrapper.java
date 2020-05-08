@@ -12,29 +12,11 @@ public class PrintWrapper {
      * @param filePath
      */
     public static void writeNode(BTreeNode node, File file) {
-        // each node takes up this many bytes. there is also 4 lines (40 bytes) of metadata for each file
-        // DONT FORGET TO ACCOUNT FOR NEXT LINE MARKERS
-        // long bytesPerNode = 48 + (11 * (node.getDegree() + 1)) + (74 * (node.getDegree()) - 1);
-        // long bytePerNode = (4 * 11) + (2) + ((degree + 1) * 11) + ((10 + 1 + 62 + 1) * degree)
 
         ScannerWrapper wrap = new ScannerWrapper(file);
-        // boolean endOfFile = false;
-        // if (node.getSelfPointer() == wrap.getNextPointer()) {
-        //     endOfFile = true;
-        // }
-        // RandomAccessFile f;
         try {
             RandomAccessFile f = new RandomAccessFile(file, "rw");
-            // for (int currentLine = 1; currentLine < node.getSelfPointer(); currentLine++) {
-            //     f.readLine();
-            // }
             f.seek(node.getSelfPointer());
-            /**
-             * If writing to the end of the file, start on a new line
-             */
-            // if (node.getSelfPointer() == wrap.getNextPointer()) {
-            //     f.write(" ".getBytes());
-            // }
             f.write(new String(node.toString() + "\n").getBytes());
             f.close();
         } catch (FileNotFoundException e) {

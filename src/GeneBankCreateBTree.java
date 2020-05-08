@@ -76,7 +76,7 @@ public class GeneBankCreateBTree {
     public void readGBK() throws FileNotFoundException {
         String holdsValue = "";
         gbkreader = new Scanner(gbkfile);
-        String gbkLine = gbkreader.nextLine();
+        String gbkLine = "";
         while (gbkreader.hasNextLine()) {
             boolean start = false;
             while (!start && gbkreader.hasNextLine()) {
@@ -84,12 +84,11 @@ public class GeneBankCreateBTree {
 
                 if (gbkLine.trim().equals("ORIGIN")) {
                     start = true;
-                    gbkLine = gbkreader.nextLine();
                 }
             }
 
-            while (!gbkLine.trim().contains("//")) {
-                System.out.println("\n\n" + gbkLine);
+            while (gbkreader.hasNextLine() && !gbkLine.trim().contains("//")) {
+                gbkLine = gbkreader.nextLine();
                 Scanner linereader = new Scanner(gbkLine);
 
                 while (linereader.hasNext()) {
@@ -110,10 +109,8 @@ public class GeneBankCreateBTree {
                         BTreeNode current = root;
                         while (addtype != 0) {
                             if (addtype == -1) {
-                                long startTime = System.currentTimeMillis();
                                 BTreeNode[] spliter = new BTreeNode[2];
                                 spliter = current.split();
-                                startTime = System.currentTimeMillis();
                                 PrintWrapper.writeNode(current, outFile);
                                 PrintWrapper.writeNode(spliter[0], outFile);
                                 PrintWrapper.writeNode(spliter[1], outFile);
@@ -125,8 +122,6 @@ public class GeneBankCreateBTree {
                                     cache.add(spliter[0]);
                                     cache.add(spliter[1]);
                                 }
-
-                                // write to disk all three nodes TODO for CACHE
 
                                 addtype = current.add(Parser.dnaToDecimal(valToNode));
                                 // then add again
@@ -144,17 +139,13 @@ public class GeneBankCreateBTree {
                                 }
                             }
                         }
-                        // System.out.println("Successfully added " + valToNode + " to node " + addtype
-                        // + " in " + (System.currentTimeMillis() - startTime) + " ms\n\n");
                         PrintWrapper.writeNode(current, outFile);
                         if (usingCache) {
                             cache.add(current);
                         }
-                        // write to disk TODO CACHE
                     }
                 }
                 linereader.close();
-                gbkLine = gbkreader.nextLine();
             }
         }
         gbkreader.close();

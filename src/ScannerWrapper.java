@@ -61,53 +61,18 @@ public class ScannerWrapper {
     // returns next available node pointer. Used in split method in BTreeNode
     public long getNextPointer() {
         return file.length();
-        // try {
-        // fileScan = new Scanner(file);
-        // } catch (FileNotFoundException e) {
-        // e.printStackTrace();
-        // System.exit(1);
-        // }
-        // int lineCount = 0;
-        // while (fileScan.hasNextLine()) {
-        // fileScan.nextLine();
-        // lineCount++;
-        // }
-        // fileScan.close();
-        // return ++lineCount;
     }
 
     public BTreeNode getNode(long pointer) {
         // read file into a string
         String node = "";
         try {
-            // fileScan = new Scanner(file);
-            // for (int i = 1; i < pointer; i++) {
-            // if (fileScan.hasNextLine()) {
-            // fileScan.nextLine();
-            // } else {
-            // IndexOutOfBoundsException e = new IndexOutOfBoundsException("Specified node
-            // does not exist in file.");
-            // e.printStackTrace();
-            // System.exit(1);
-            // }
-            // }
             RandomAccessFile f = new RandomAccessFile(file, "r");
             f.seek(pointer);
             byte[] b = new byte[Integer.valueOf(Long.toString(bytesPerNode))];
             f.readFully(b);
             f.close();
             node = new String(b);
-            // for (int i = 0; i < nodeDiskSize; i++) {
-            //     if (fileScan.hasNextLine()) {
-            //         node += fileScan.nextLine() + "\n";
-            //     } else {
-            //         IndexOutOfBoundsException e = new IndexOutOfBoundsException(
-            //                 "Specified node does not exist in file.");
-            //         e.printStackTrace();
-            //         System.exit(1);
-            //     }
-            // }
-            // fileScan.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.exit(1);
