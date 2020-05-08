@@ -26,9 +26,11 @@ public class GeneBankSearch {
     }
 
     public void run() {
+        long startTime = System.currentTimeMillis();
         parseArgs();
         initVars();
         search();
+        System.out.println("Program finsihed in "+ (System.currentTimeMillis() - startTime) + "ms");
     }
 
     public void search() {
@@ -51,30 +53,23 @@ public class GeneBankSearch {
                 // while value is not found
                 while (notFound) {
                     whereIsOutput = currentNode.whereIs(targetValue);
-                    switch (Integer.valueOf(Long.toString(whereIsOutput))) {
-                        // targetValue is in the currentNode
-                        case 0:
-                            // print value and frequency and break the loop
-                            System.out.println(Parser.decimalToDNA(targetValue, k) + ": " + currentNode.frequencyOf(targetValue));
-                            notFound = false;
-                            break;
-                        // targetValue is not in the tree whatsoever
-                        case -1:
-                            // print the targetValue is not contained in the tree
-                            System.out.println(Parser.decimalToDNA(targetValue, k) + " is not contained in this tree.");
-                            notFound = false;
-                            break;
-                        // targetValue is contained in a childNode
-                        default:
-                            // get the child node and assign it to currentNode
-                            currentNode = null;
-                            if (usingCache) {
-                                currentNode = cache.search(new BTreeNode(whereIsOutput));
-                            }
-                            if (currentNode == null) {
-                                currentNode = scan.getNode(whereIsOutput);
-                            }
-                            break;
+                    if (whereIsOutput == -1) {
+                        notFound = false;
+                    } else if (whereIsOutput == 0) {
+                        // print value and frequency and break the loop
+                        System.out.println(Parser.decimalToDNA(targetValue, k).toLowerCase() + ": " + currentNode.frequencyOf(targetValue));
+                        notFound = false;
+                    } else {
+                        // get the child node and assign it to currentNode
+                        currentNode = null;
+                        if (usingCache) {
+                            currentNode = cache.search(new BTreeNode(whereIsOutput));
+                        }
+                        if (currentNode == null) {
+                            currentNode = scan.getNode(whereIsOutput);
+                        }
+                        if (usingCache)
+                            cache.add(currentNode);
                     }
                 }
             }
@@ -104,6 +99,13 @@ public class GeneBankSearch {
             printUsage();
             System.exit(1);
         }
+        // initialize BTree file
+        btreeFile = new File(args[1]);
+        if (!btreeFile.exists()) {
+            FileNotFoundException e = new FileNotFoundException("Given BTree file does not exist.");
+            e.printStackTrace();
+            System.exit(1);
+        }
         // with/without cache
         if (args[0].equals("1")) {
             // if cache size is not given, end
@@ -112,7 +114,7 @@ public class GeneBankSearch {
                 System.exit(1);
             }
             usingCache = true;
-            cache = new CacheDriver<BTreeNode>(1, Integer.parseInt(args[3]));
+            cache = new CacheDriver<BTreeNode>("r", btreeFile, 1, Integer.parseInt(args[3]));
             // set debug level if it exists
             if (args.length == 5) {
                 debugLevel = Integer.parseInt(args[4]);
@@ -122,13 +124,6 @@ public class GeneBankSearch {
             if (args.length == 4) {
                 debugLevel = Integer.parseInt(args[3]);
             }
-        }
-        // initialize BTree file
-        btreeFile = new File(args[1]);
-        if (!btreeFile.exists()) {
-            FileNotFoundException e = new FileNotFoundException("Given BTree file does not exist.");
-            e.printStackTrace();
-            System.exit(1);
         }
         // initialize query file
         queryFile = new File(args[2]);

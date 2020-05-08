@@ -1,5 +1,8 @@
+import java.io.File;
+
 /**
  * Driver to interact with the Cache
+ * 
  * @param <T>
  */
 
@@ -9,6 +12,7 @@ public class CacheDriver<T> {
     private int size1, size2;
     private int c1Hits, c2Hits;
     private int c1Refs, c2Refs;
+    private String mode;
 
     public int getC1Refs() {
         return c1Refs;
@@ -36,23 +40,23 @@ public class CacheDriver<T> {
         return c2Hits;
     }
 
-    public CacheDriver(int level, int maxSize1) throws IllegalArgumentException {
+    public CacheDriver(String mode, File file, int level, int maxSize1) throws IllegalArgumentException {
         if (level < 1 || level > 2 || maxSize1 < 1) {
             throw new IllegalArgumentException("Illegal Parameters");
         }
         this.level = level;
 
-        cache1 = new Cache<T>(maxSize1);
+        cache1 = new Cache<T>(mode, maxSize1, file);
         c1Hits = c2Hits = c1Refs = c2Refs = 0;
     }
 
-    public CacheDriver(int level, int maxSize1, int maxSize2) throws IllegalArgumentException {
+    public CacheDriver(String mode, File file, int level, int maxSize1, int maxSize2) throws IllegalArgumentException {
         if (level < 1 || level > 2 || maxSize1 < 1 || maxSize1 < 1) {
             throw new IllegalArgumentException("Illegal parameters");
         }
         this.level = level;
-        cache1 = new Cache<T>(maxSize1);
-        cache2 = new Cache<T>(maxSize2);
+        cache1 = new Cache<T>(mode, maxSize1, file);
+        cache2 = new Cache<T>(mode, maxSize2, file);
         c1Hits = c2Hits = c1Refs = c2Refs = 0;
     }
 
@@ -61,6 +65,12 @@ public class CacheDriver<T> {
         if (level == 2) {
             cache2.addToTop(object);
         }
+    }
+
+    public void flush() {
+        cache1.flush();
+        if (level == 2)
+            cache2.flush();
     }
 
     /**

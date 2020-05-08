@@ -1,0 +1,8 @@
+Phillip Bruce
+Wesley Brown
+
+
+Our method of storing the BTree on the disk is designed in two primary parts.
+At the top, there are 4 lines of metadata of the overall BTree. These are the
+k value, the degree, the root node pointer (more on that soon), and the total
+number of nodes stored.

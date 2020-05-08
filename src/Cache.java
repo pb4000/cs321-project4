@@ -1,3 +1,5 @@
+import java.io.File;
+
 /**
  * Cache implementation using a double linked list
  *
@@ -12,16 +14,20 @@ public class Cache<T> {
     public int maxSize;   // maximum size of the cache
     public int size;   // current size of cache
     private T temp;
+    File file;
+    private String mode;
 
     /**
      * Constructor
      *
      * @param maxSize
      */
-    public Cache(int maxSize) {
+    public Cache(String mode, int maxSize, File file) {
         this.maxSize = maxSize;
         size = 0;
         list = new DoubleLinkedList<T>();
+        this.file = file;
+        this.mode = mode;
     }
 
     /**
@@ -48,9 +54,18 @@ public class Cache<T> {
         list.remove(object);
         list.addToFront(object);
         if (size == maxSize) {
-            list.removeLast();
+            if (mode.equals("w"))
+                PrintWrapper.writeNode((BTreeNode) list.removeLast(), file);
+            else
+                list.removeLast();
         } else {
             size++;
+        }
+    }
+
+    public void flush() {
+        while (list.hasNext()) {
+            PrintWrapper.writeNode((BTreeNode) list.removeLast(), file);
         }
     }
 

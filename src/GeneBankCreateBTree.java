@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class GeneBankCreateBTree {
@@ -15,6 +16,8 @@ public class GeneBankCreateBTree {
     String btreeFile = "";
     Scanner gbkreader;
     File outFile;
+    PrintWriter dumpWriter;
+    int totalNodes;
 
     public static void main(String[] args) throws FileNotFoundException {
         GeneBankCreateBTree g = new GeneBankCreateBTree(args);
@@ -27,8 +30,17 @@ public class GeneBankCreateBTree {
     }
 
     public void run() throws FileNotFoundException {
+        long startTime = System.currentTimeMillis();
         parseArgs();
         readGBK();
+        System.out.println("Program finsihed in " + (System.currentTimeMillis() - startTime) + "ms");
+
+        if (debugLevel == 1) {
+            scan = new ScannerWrapper(outFile, degree, k);
+            dumpWriter = new PrintWriter(new File(args[2] + ".btree.dump." + k));
+            inOrderDump(root.getSelfPointer());
+            dumpWriter.close();
+        }
     }
 
     public void parseArgs() {
@@ -36,25 +48,6 @@ public class GeneBankCreateBTree {
         if (args.length < 4 || args.length > 6) {
             printUsage();
             System.exit(1);
-        }
-        // with/without cache
-        if (args[0].equals("1")) {
-            // if cache size is not given, end
-            if (args.length == 4) {
-                printUsage();
-                System.exit(1);
-            }
-            usingCache = true;
-            cache = new CacheDriver<BTreeNode>(1, Integer.parseInt(args[3]));
-            // set debug level if it exists
-            if (args.length == 6) {
-                debugLevel = Integer.parseInt(args[5]);
-            }
-        } else {
-            // set debug level if it exists
-            if (args.length == 5) {
-                debugLevel = Integer.parseInt(args[4]);
-            }
         }
         // initialize degree,k, and root vars
         degree = Integer.parseInt(args[1]);
@@ -68,8 +61,28 @@ public class GeneBankCreateBTree {
         }
         btreeFile = args[2] + ".btree.data." + k + "." + degree;
         outFile = new File(btreeFile);
+        // with/without cache
+        if (args[0].equals("1")) {
+            // if cache size is not given, end
+            if (args.length == 4) {
+                printUsage();
+                System.exit(1);
+            }
+            usingCache = true;
+            cache = new CacheDriver<BTreeNode>("w", outFile, 1, Integer.parseInt(args[4]));
+            // set debug level if it exists
+            if (args.length == 6) {
+                debugLevel = Integer.parseInt(args[5]);
+            }
+        } else {
+            // set debug level if it exists
+            if (args.length == 5) {
+                debugLevel = Integer.parseInt(args[4]);
+            }
+        }
         root = new BTreeNode(outFile, k, degree, 44, -1);
         PrintWrapper.createFile(k, degree, root, outFile);
+        totalNodes = 1;
         scan = new ScannerWrapper(outFile, degree, k);
     }
 
@@ -93,7 +106,6 @@ public class GeneBankCreateBTree {
             while (gbkreader.hasNextLine() && !gbkLine.trim().contains("//")) {
                 gbkLine = gbkreader.nextLine();
                 Scanner linereader = new Scanner(gbkLine);
-                System.out.println(gbkLine);
                 while (linereader.hasNext()) {
                     String next = linereader.next();
                     if (!next.matches("-?(0|[1-9]\\d*)")) {
@@ -114,7 +126,7 @@ public class GeneBankCreateBTree {
                             if (addtype == -1) {
                                 BTreeNode[] spliter = new BTreeNode[2];
                                 spliter = current.split();
-                                PrintWrapper.writeNode(current, outFile);
+                                totalNodes += 2;
                                 PrintWrapper.writeNode(spliter[0], outFile);
                                 PrintWrapper.writeNode(spliter[1], outFile);
                                 // write the parent to current parent location
@@ -124,6 +136,8 @@ public class GeneBankCreateBTree {
                                     cache.add(current);
                                     cache.add(spliter[0]);
                                     cache.add(spliter[1]);
+                                } else {
+                                    PrintWrapper.writeNode(current, outFile);
                                 }
 
                                 addtype = current.add(Parser.dnaToDecimal(valToNode));
@@ -142,15 +156,19 @@ public class GeneBankCreateBTree {
                                 }
                             }
                         }
-                        PrintWrapper.writeNode(current, outFile);
                         if (usingCache) {
                             cache.add(current);
+                        } else {
+                            PrintWrapper.writeNode(current, outFile);
                         }
                     }
                 }
                 linereader.close();
             }
+            PrintWrapper.updateNumberOfNodes(totalNodes, outFile);
         }
+        if (usingCache)
+            cache.flush();
         gbkreader.close();
     }
 
@@ -161,5 +179,17 @@ public class GeneBankCreateBTree {
     public static void printUsage() {
         System.out.println(
                 "Usage:\njava GeneBankCreateBTree <0/1(no/with Cache)> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>]");
+    }
+
+    public void inOrderDump(long pointer) {
+        if (pointer == -1)
+            return;
+        BTreeNode node = scan.getNode(pointer);
+        for (int i = 0; i < degree + 1; i++) {
+            inOrderDump(node.getChildren()[i]);
+            if (i != degree && node.getValues()[i] != -1)
+                dumpWriter.println(
+                        Parser.decimalToDNA(node.getValues()[i], k).toLowerCase() + ": " + node.getFrequency()[i]);
+        }
     }
 }

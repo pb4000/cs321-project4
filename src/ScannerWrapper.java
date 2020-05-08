@@ -80,7 +80,6 @@ public class ScannerWrapper {
             e.printStackTrace();
             System.exit(1);
         }
-
         fileScan = new Scanner(node);
         // read string into variables
         long selfPointer = fileScan.nextLong();
@@ -94,19 +93,23 @@ public class ScannerWrapper {
         fileScan.nextInt();
         fileScan.nextInt();
         long[] childPointers = new long[degree + 1];
+        String temp;
         for (int i = 0; i < degree + 1; i++) {
-            childPointers[i] = fileScan.nextLong();
+            temp = fileScan.next();
+            if (temp.contains("-1"))
+                childPointers[i] = -1;
+            else
+                childPointers[i] = Long.parseLong(temp);
         }
         long[] values = new long[degree];
         int[] frequency = new int[degree];
-        String temp;
         /**
          * Added special case for -1
          */
         for (int i = 0; i < degree; i++) {
             frequency[i] = fileScan.nextInt();
             temp = fileScan.next();
-            if (Long.parseLong(temp) == -1)
+            if (temp.contains("-1"))
                 values[i] = -1;
             else
                 values[i] = Long.parseLong(temp, 2);

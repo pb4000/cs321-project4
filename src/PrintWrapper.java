@@ -46,7 +46,7 @@ public class PrintWrapper {
             f.write(new String(Parser.add10Spaces(degree) + "\n").getBytes());
             f.write(new String(Parser.add10Spaces(Integer.valueOf(Long.toString(rootNode.getSelfPointer()))) + "\n").getBytes());
             f.write(new String(Parser.add10Spaces(1) + "\n").getBytes());
-            f.write(rootNode.toString().getBytes());
+            f.write(new String(rootNode.toString() + "\n").getBytes());
             f.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -65,9 +65,7 @@ public class PrintWrapper {
     public static void updateNumberOfNodes(int nodes, File file) {
         try {
             RandomAccessFile f = new RandomAccessFile(file, "rw");
-            for (int i = 0; i < 4; i++) {
-                f.readLine();
-            }
+            f.seek(33);
             f.write(Parser.add10Spaces(nodes).getBytes());
             f.close();
         } catch (FileNotFoundException e) {
