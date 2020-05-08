@@ -20,24 +20,25 @@ public class Parser {
         String binary = Long.toBinaryString(bin);
         String retVal = "";
         String holder = "";
+        int len = binary.length();
 
-        for (int i = 0; i < k - binary.length(); i++) {
+        for (int i = 0; i < (k * 2) - len; i++) {
             binary = "0" + binary;
         }
 
-        for (int i = 0; i < k;) {
-            holder += binary.charAt(i) + binary.charAt(i + 1);
+        for (int i = 0; i < k * 2; i += 2) {
+            holder = binary.substring(0, 2);
+            binary = binary.substring(2);
 
-            if (holder == "00") {
-                retVal += "A";
-            } else if (holder == "01") {
-                retVal += "C";
-            } else if (holder == "10") {
-                retVal += "G";
-            } else if (holder == "11") {
-                retVal += "T";
+            if (holder.equals("00")) {
+                retVal = retVal + "A";
+            } else if (holder.equals("01")) {
+                retVal = retVal + "C";
+            } else if (holder.equals("10")) {
+                retVal = retVal + "G";
+            } else if (holder.equals("11")) {
+                retVal = retVal + "T";
             }
-            i += 2;
         }
         return retVal;
     }

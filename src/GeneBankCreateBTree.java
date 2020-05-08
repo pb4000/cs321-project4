@@ -74,7 +74,9 @@ public class GeneBankCreateBTree {
     }
 
     public void readGBK() throws FileNotFoundException {
-        cache.add(root);
+        if (usingCache) {
+            cache.add(root);
+        }
         String holdsValue = "";
         gbkreader = new Scanner(gbkfile);
         String gbkLine = "";
