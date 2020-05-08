@@ -1,14 +1,17 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Scanner;
 
 public class ScannerWrapper {
-int k;
-int degree;
-Scanner fileScan;
-File file;
-int nodeDiskSize;
-Scanner gbkScanner;
+    int k;
+    int degree;
+    Scanner fileScan;
+    File file;
+    int nodeDiskSize;
+    Scanner gbkScanner;
+    long bytesPerNode;
 
     public ScannerWrapper(File f) {
         try {
@@ -33,6 +36,7 @@ Scanner gbkScanner;
         this.degree = degree;
         this.k = k;
         nodeDiskSize = 5 + (2 * degree) + 1;
+        bytesPerNode = (4 * 11) + (2) + ((degree + 1) * 11) + ((10 + 1 + 62 + 1) * degree);
     }
 
     public void close() {
@@ -55,66 +59,78 @@ Scanner gbkScanner;
     }
 
     // returns next available node pointer. Used in split method in BTreeNode
-    public int getNextPointer() {
-        try {
-            fileScan = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        int lineCount = 0;
-        while (fileScan.hasNextLine()) {
-            fileScan.nextLine();
-            lineCount++;
-        }
-        fileScan.close();
-        return ++lineCount;
+    public long getNextPointer() {
+        return file.length();
+        // try {
+        // fileScan = new Scanner(file);
+        // } catch (FileNotFoundException e) {
+        // e.printStackTrace();
+        // System.exit(1);
+        // }
+        // int lineCount = 0;
+        // while (fileScan.hasNextLine()) {
+        // fileScan.nextLine();
+        // lineCount++;
+        // }
+        // fileScan.close();
+        // return ++lineCount;
     }
 
-    public BTreeNode getNode(int pointer) {
+    public BTreeNode getNode(long pointer) {
         // read file into a string
         String node = "";
         try {
-            fileScan = new Scanner(file);
-            for (int i = 1; i < pointer; i++) {
-                if (fileScan.hasNextLine()) {
-                    fileScan.nextLine();
-                } else {
-                    IndexOutOfBoundsException e = new IndexOutOfBoundsException("Specified node does not exist in file.");
-                    e.printStackTrace();
-                    System.exit(1);
-                }
-            }
-            for (int i = 0; i < nodeDiskSize; i++) {
-                if (fileScan.hasNextLine()) {
-                    node += fileScan.nextLine() + "\n";
-                } else {
-                    IndexOutOfBoundsException e = new IndexOutOfBoundsException("Specified node does not exist in file.");
-                    e.printStackTrace();
-                    System.exit(1);
-                }
-            }
-            fileScan.close();
+            // fileScan = new Scanner(file);
+            // for (int i = 1; i < pointer; i++) {
+            // if (fileScan.hasNextLine()) {
+            // fileScan.nextLine();
+            // } else {
+            // IndexOutOfBoundsException e = new IndexOutOfBoundsException("Specified node
+            // does not exist in file.");
+            // e.printStackTrace();
+            // System.exit(1);
+            // }
+            // }
+            RandomAccessFile f = new RandomAccessFile(file, "r");
+            f.seek(pointer);
+            byte[] b = new byte[Integer.valueOf(Long.toString(bytesPerNode))];
+            f.readFully(b);
+            f.close();
+            node = new String(b);
+            // for (int i = 0; i < nodeDiskSize; i++) {
+            //     if (fileScan.hasNextLine()) {
+            //         node += fileScan.nextLine() + "\n";
+            //     } else {
+            //         IndexOutOfBoundsException e = new IndexOutOfBoundsException(
+            //                 "Specified node does not exist in file.");
+            //         e.printStackTrace();
+            //         System.exit(1);
+            //     }
+            // }
+            // fileScan.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.exit(1);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
         }
-        
+
         fileScan = new Scanner(node);
         // read string into variables
-        int selfPointer = fileScan.nextInt();
+        long selfPointer = fileScan.nextLong();
         int leaf = fileScan.nextInt();
         boolean isLeaf;
         if (leaf == 1)
             isLeaf = true;
         else
             isLeaf = false;
-        int parentPointer = fileScan.nextInt();
+        long parentPointer = fileScan.nextLong();
         fileScan.nextInt();
         fileScan.nextInt();
-        int[] childPointers = new int[degree + 1];
+        long[] childPointers = new long[degree + 1];
         for (int i = 0; i < degree + 1; i++) {
-            childPointers[i] = fileScan.nextInt();
+            childPointers[i] = fileScan.nextLong();
         }
         long[] values = new long[degree];
         int[] frequency = new int[degree];

@@ -13,14 +13,14 @@ import java.io.File;
  * returns 2 new nodes.
  */
 public class BTreeNode implements Comparable<BTreeNode> {
-    private int[] childPointers;
+    private long[] childPointers;
     // store values as numbers converted from binary
     // to convert back, convert value to binary, then fill in preceeding 0s based on
     // k
     long[] values;
     int[] frequency;
-    private int selfPointer;
-    private int parentPointer;
+    private long selfPointer;
+    private long parentPointer;
     private int k;
     private int degree;
     // total number of lines each node takes up on the disk
@@ -28,32 +28,34 @@ public class BTreeNode implements Comparable<BTreeNode> {
     // values stored
     private int nodeDiskSize;
     private File file;
+    private long bytesPerNode;
 
     /**
      * Used exclusively in cache for finding the real node
      * @param selfPointer
      */
-    public BTreeNode(int selfPointer) {
+    public BTreeNode(long selfPointer) {
         this.selfPointer = selfPointer;
     }
 
-    public BTreeNode(File file, int k, int degree, int selfPointer, int parentPointer) {
+    public BTreeNode(File file, int k, int degree, long selfPointer, long parentPointer) {
         this.file = file;
         this.k = k;
         this.degree = degree;
         this.selfPointer = selfPointer;
         this.parentPointer = parentPointer;
-        childPointers = new int[degree + 1];
+        childPointers = new long[degree + 1];
         values = new long[degree];
         frequency = new int[degree];
         childPointers = initEmptyValues(childPointers);
         values = initEmptyValues(values);
         frequency = initEmptyValues(frequency);
         nodeDiskSize = 5 + (2 * degree) + 1;
+        bytesPerNode = (4 * 11) + (2) + ((degree + 1) * 11) + ((10 + 1 + 62 + 1) * degree);
     }
 
-    public BTreeNode(File file, int k, int degree, int selfPointer, int parentPointer, long[] values, int[] frequency,
-            int[] childPointers) {
+    public BTreeNode(File file, int k, int degree, long selfPointer, long parentPointer, long[] values, int[] frequency,
+            long[] childPointers) {
         this.file = file;
         this.k = k;
         this.degree = degree;
@@ -63,6 +65,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
         this.values = values;
         this.frequency = frequency;
         nodeDiskSize = 5 + (2 * degree) + 1;
+        bytesPerNode = (4 * 11) + (2) + ((degree + 1) * 11) + ((10 + 1 + 62 + 1) * degree);
     }
 
     public BTreeNode(File file, int k, int degree) {
@@ -70,13 +73,22 @@ public class BTreeNode implements Comparable<BTreeNode> {
         this.k = k;
         this.degree = degree;
         selfPointer = parentPointer = -1;
-        childPointers = new int[degree + 1];
+        childPointers = new long[degree + 1];
         values = new long[degree];
         frequency = new int[degree];
         childPointers = initEmptyValues(childPointers);
         values = initEmptyValues(values);
         frequency = initEmptyValues(frequency);
         nodeDiskSize = 5 + (2 * degree) + 1;
+        bytesPerNode = (4 * 11) + (2) + ((degree + 1) * 11) + ((10 + 1 + 62 + 1) * degree);
+    }
+
+    public int getDegree() {
+        return degree;
+    }
+
+    public int getNodeDiskSize() {
+        return nodeDiskSize;
     }
 
     /**
@@ -91,7 +103,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
      * @param newValue
      * @return
      */
-    public int add(long newValue) {
+    public long add(long newValue) {
         // if the node is full, return -1
         if (isFull() && degree > 1) {
             return -1;
@@ -146,7 +158,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
      * @param target
      * @return
      */
-    public int whereIs(long target) {
+    public long whereIs(long target) {
         // check this node
         for (int i = 0; i < degree; i++) {
             if (values[i] == -1) {
@@ -220,7 +232,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
             // 0. initialize variables
             long[] childValues = new long[degree];
             int[] childFrequency = new int[degree];
-            int[] childChildPointers = new int[degree + 1];
+            long[] childChildPointers = new long[degree + 1];
             childValues = initEmptyValues(childValues);
             childFrequency = initEmptyValues(childFrequency);
             childChildPointers = initEmptyValues(childChildPointers);
@@ -245,8 +257,8 @@ public class BTreeNode implements Comparable<BTreeNode> {
             long[] rightValues = new long[degree];
             int[] leftFrequency = new int[degree];
             int[] rightFrequency = new int[degree];
-            int[] leftChildPointers = new int[degree + 1];
-            int[] rightChildPointers = new int[degree + 1];
+            long[] leftChildPointers = new long[degree + 1];
+            long[] rightChildPointers = new long[degree + 1];
             leftValues = initEmptyValues(leftValues);
             rightValues = initEmptyValues(rightValues);
             leftFrequency = initEmptyValues(leftFrequency);
@@ -291,7 +303,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
             // assign next childPointer
             ScannerWrapper wrapper = new ScannerWrapper(file, degree, k);
             childPointers[0] = wrapper.getNextPointer();
-            childPointers[1] = childPointers[0] + nodeDiskSize;
+            childPointers[1] = childPointers[0] + bytesPerNode;
             // 2. instantiate BTreeNodes
             arrayOut[0] = new BTreeNode(file, k, degree, childPointers[0], selfPointer, leftValues, leftFrequency,
                     leftChildPointers);
@@ -328,11 +340,11 @@ public class BTreeNode implements Comparable<BTreeNode> {
         return values;
     }
 
-    public int[] getChildren() {
+    public long[] getChildren() {
         return childPointers;
     }
 
-    public int getSelfPointer() {
+    public long getSelfPointer() {
         return selfPointer;
     }
 
@@ -340,7 +352,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
         this.selfPointer = selfPointer;
     }
 
-    public int getParentpointer() {
+    public long getParentpointer() {
         return parentPointer;
     }
 
@@ -376,21 +388,21 @@ public class BTreeNode implements Comparable<BTreeNode> {
     @Override
     public String toString() {
         String output = "";
-        output += Parser.add10Spaces(selfPointer) + "\n";
+        output += Parser.add10Spaces(Integer.valueOf(Long.toString(selfPointer))) + "\n";
         if (getTotalChildren() == 0)
             output += "1\n";
         else
             output += "0\n";
-        output += Parser.add10Spaces(parentPointer) + "\n";
+        output += Parser.add10Spaces(Integer.valueOf(Long.toString(parentPointer))) + "\n";
         output += Parser.add10Spaces(getTotalObjects()) + "\n";
         output += Parser.add10Spaces(getTotalChildren()) + "\n";
         for (int i = 0; i < degree + 1; i++) {
-            output += Parser.add10Spaces(childPointers[i]) + "\n";
+            output += Parser.add10Spaces(Integer.valueOf(Long.toString(childPointers[i]))) + "\n";
         }
         for (int i = 0; i < degree; i++) {
             output += Parser.add10Spaces(frequency[i]) + " " + Parser.add62Spaces(valueToString(values[i]));
             if (i != degree - 1)
-                output +="\r";
+                output +="\n";
         }
         return output;
     }
@@ -451,7 +463,7 @@ public class BTreeNode implements Comparable<BTreeNode> {
     }
 
     private void sortChildren() {
-        int[] temp = childPointers; // used to store pointers and iterate through them
+        long[] temp = childPointers; // used to store pointers and iterate through them
         BTreeNode tempNode;
         for (int i = 0; i < degree + 1; i++) {
             childPointers[i] = -1;

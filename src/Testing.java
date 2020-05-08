@@ -17,12 +17,13 @@ public class Testing {
         // PrintWrapper.createFile(6, 7, new BTreeNode(new File("lol"), 6, 7, 5, -1), new File("lol"));
         // ScannerWrapper scan = new ScannerWrapper(new File("lol"), 7, 6);
         // System.out.println(scan.getNextPointer());
-        RandomAccessFile f = new RandomAccessFile(new File("18k.txt"), "rw");
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < 18800; i++) {
-            f.write(("100010111010  01010101  010110101\n").getBytes());
-        }
+        RandomAccessFile f = new RandomAccessFile(new File("lol.txt"), "rw");
+        f.write("Hello\nhowareyoufriend".getBytes());
         f.close();
-        System.out.println(System.currentTimeMillis() - start);
+        f = new RandomAccessFile(new File("lol.txt"), "r");
+        byte[] b = new byte[21];
+        f.readFully(b);
+        f.close();
+        System.out.println(new String(b));
     }
 }

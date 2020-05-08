@@ -68,7 +68,7 @@ public class GeneBankCreateBTree {
         }
         btreeFile = args[2] + ".btree.data." + k + "." + degree;
         outFile = new File(btreeFile);
-        root = new BTreeNode(outFile, k, degree, 5, -1);
+        root = new BTreeNode(outFile, k, degree, 44, -1);
         PrintWrapper.createFile(k, degree, root, outFile);
         scan = new ScannerWrapper(outFile, degree, k);
     }
@@ -77,79 +77,85 @@ public class GeneBankCreateBTree {
         String holdsValue = "";
         gbkreader = new Scanner(gbkfile);
         String gbkLine = gbkreader.nextLine();
-        boolean start = false;
-        while (!start) {
-            gbkLine = gbkreader.nextLine();
-
-            if (gbkLine.trim().equals("ORIGIN")) {
-                start = true;
+        while (gbkreader.hasNextLine()) {
+            boolean start = false;
+            while (!start && gbkreader.hasNextLine()) {
                 gbkLine = gbkreader.nextLine();
-            }
-        }
 
-        while (!gbkLine.trim().contains("//")) {
-            System.out.println("\n\n" + gbkLine);
-            Scanner linereader = new Scanner(gbkLine);
-
-            while (linereader.hasNext()) {
-                String next = linereader.next();
-                if (!next.matches("-?(0|[1-9]\\d*)")) {
-                    holdsValue += next.trim().toUpperCase();
+                if (gbkLine.trim().equals("ORIGIN")) {
+                    start = true;
+                    gbkLine = gbkreader.nextLine();
                 }
             }
 
-            // this should run through the holdsValue until there are not enough locations
-            // this will be moved up
-            while (holdsValue.length() >= k) {
-                // this will create new nodes or populate old
-                String valToNode = holdsValue.substring(0, k);
-                holdsValue = holdsValue.substring(1);
-                if (!valToNode.contains("N")) {
-                    int addtype = root.add(Parser.dnaToDecimal(valToNode));
-                    BTreeNode current = root;
-                    while (addtype != 0) {
-                        if (addtype == -1) {
-                            BTreeNode[] spliter = new BTreeNode[2];
-                            spliter = current.split();
-                            PrintWrapper.writeNode(current, outFile);
-                            PrintWrapper.writeNode(spliter[0], outFile);
-                            PrintWrapper.writeNode(spliter[1], outFile);
-                            // write the parent to current parent location
-                            // wirte the left child to the next availible possition
-                            // write the right child to the next availible possition
-                            if (usingCache) {
-                                cache.add(current);
-                                cache.add(spliter[0]);
-                                cache.add(spliter[1]);
-                            }
+            while (!gbkLine.trim().contains("//")) {
+                System.out.println("\n\n" + gbkLine);
+                Scanner linereader = new Scanner(gbkLine);
 
-                            // write to disk all three nodes TODO for CACHE
+                while (linereader.hasNext()) {
+                    String next = linereader.next();
+                    if (!next.matches("-?(0|[1-9]\\d*)")) {
+                        holdsValue += next.trim().toUpperCase();
+                    }
+                }
 
-                            addtype = current.add(Parser.dnaToDecimal(valToNode));
-                            // then add again
-                        } else {
-                            if (usingCache) {
-                                // uses cache to make changes
-                                current = cache.search(new BTreeNode(addtype));
-                                if (current == null) {
-                                    current = scan.getNode(addtype);
+                // this should run through the holdsValue until there are not enough locations
+                // this will be moved up
+                while (holdsValue.length() >= k) {
+                    // this will create new nodes or populate old
+                    String valToNode = holdsValue.substring(0, k);
+                    holdsValue = holdsValue.substring(1);
+                    if (!valToNode.contains("N")) {
+                        long addtype = root.add(Parser.dnaToDecimal(valToNode));
+                        BTreeNode current = root;
+                        while (addtype != 0) {
+                            if (addtype == -1) {
+                                long startTime = System.currentTimeMillis();
+                                BTreeNode[] spliter = new BTreeNode[2];
+                                spliter = current.split();
+                                startTime = System.currentTimeMillis();
+                                PrintWrapper.writeNode(current, outFile);
+                                PrintWrapper.writeNode(spliter[0], outFile);
+                                PrintWrapper.writeNode(spliter[1], outFile);
+                                // write the parent to current parent location
+                                // wirte the left child to the next availible possition
+                                // write the right child to the next availible possition
+                                if (usingCache) {
+                                    cache.add(current);
+                                    cache.add(spliter[0]);
+                                    cache.add(spliter[1]);
                                 }
+
+                                // write to disk all three nodes TODO for CACHE
+
                                 addtype = current.add(Parser.dnaToDecimal(valToNode));
+                                // then add again
                             } else {
-                                current = scan.getNode(addtype);
-                                addtype = current.add(Parser.dnaToDecimal(valToNode));
+                                if (usingCache) {
+                                    // uses cache to make changes
+                                    current = cache.search(new BTreeNode(addtype));
+                                    if (current == null) {
+                                        current = scan.getNode(addtype);
+                                    }
+                                    addtype = current.add(Parser.dnaToDecimal(valToNode));
+                                } else {
+                                    current = scan.getNode(addtype);
+                                    addtype = current.add(Parser.dnaToDecimal(valToNode));
+                                }
                             }
                         }
+                        // System.out.println("Successfully added " + valToNode + " to node " + addtype
+                        // + " in " + (System.currentTimeMillis() - startTime) + " ms\n\n");
+                        PrintWrapper.writeNode(current, outFile);
+                        if (usingCache) {
+                            cache.add(current);
+                        }
+                        // write to disk TODO CACHE
                     }
-                    PrintWrapper.writeNode(current, outFile);
-                    if (usingCache) {
-                        cache.add(current);
-                    }
-                    // write to disk TODO CACHE
                 }
+                linereader.close();
+                gbkLine = gbkreader.nextLine();
             }
-            linereader.close();
-            gbkLine = gbkreader.nextLine();
         }
         gbkreader.close();
     }

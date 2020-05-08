@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.Scanner;
 
 public class PrintWrapper {
 
@@ -13,29 +12,31 @@ public class PrintWrapper {
      * @param filePath
      */
     public static void writeNode(BTreeNode node, File file) {
-        Scanner scan;
-        RandomAccessFile f;
+        // each node takes up this many bytes. there is also 4 lines (40 bytes) of metadata for each file
+        // DONT FORGET TO ACCOUNT FOR NEXT LINE MARKERS
+        // long bytesPerNode = 48 + (11 * (node.getDegree() + 1)) + (74 * (node.getDegree()) - 1);
+        // long bytePerNode = (4 * 11) + (2) + ((degree + 1) * 11) + ((10 + 1 + 62 + 1) * degree)
+
+        ScannerWrapper wrap = new ScannerWrapper(file);
+        // boolean endOfFile = false;
+        // if (node.getSelfPointer() == wrap.getNextPointer()) {
+        //     endOfFile = true;
+        // }
+        // RandomAccessFile f;
         try {
-            scan = new Scanner(file);
-            f = new RandomAccessFile(file, "rw");
-            for (int currentLine = 1; currentLine < node.getSelfPointer(); currentLine++) {
-                if (!scan.hasNextLine() && currentLine + 1 < node.getSelfPointer()) {
-                    scan.close();
-                    f.close();
-                    throw new IllegalArgumentException("Line " + node.getSelfPointer() + " does not exist.");
-                }
-                f.readLine();
-            }
+            RandomAccessFile f = new RandomAccessFile(file, "rw");
+            // for (int currentLine = 1; currentLine < node.getSelfPointer(); currentLine++) {
+            //     f.readLine();
+            // }
+            f.seek(node.getSelfPointer());
             /**
              * If writing to the end of the file, start on a new line
              */
-            ScannerWrapper wrap = new ScannerWrapper(file);
-            if (node.getSelfPointer() == wrap.getNextPointer()) {
-                f.write("\n".getBytes());
-            }
-            f.write(node.toString().getBytes());
+            // if (node.getSelfPointer() == wrap.getNextPointer()) {
+            //     f.write(" ".getBytes());
+            // }
+            f.write(new String(node.toString() + "\n").getBytes());
             f.close();
-            scan.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.exit(1);
@@ -61,7 +62,7 @@ public class PrintWrapper {
             RandomAccessFile f = new RandomAccessFile(file, "rw");
             f.write(new String(Parser.add10Spaces(k) + "\n").getBytes());
             f.write(new String(Parser.add10Spaces(degree) + "\n").getBytes());
-            f.write(new String(Parser.add10Spaces(rootNode.getSelfPointer()) + "\n").getBytes());
+            f.write(new String(Parser.add10Spaces(Integer.valueOf(Long.toString(rootNode.getSelfPointer()))) + "\n").getBytes());
             f.write(new String(Parser.add10Spaces(1) + "\n").getBytes());
             f.write(rootNode.toString().getBytes());
             f.close();

@@ -38,7 +38,7 @@ public class GeneBankSearch {
             BTreeNode currentNode;
             long targetValue;
             boolean notFound;
-            int whereIsOutput;
+            long whereIsOutput;
             /**
              * While there are still queries to execute
              */
@@ -51,7 +51,7 @@ public class GeneBankSearch {
                 // while value is not found
                 while (notFound) {
                     whereIsOutput = currentNode.whereIs(targetValue);
-                    switch (whereIsOutput) {
+                    switch (Integer.valueOf(Long.toString(whereIsOutput))) {
                         // targetValue is in the currentNode
                         case 0:
                             // print value and frequency and break the loop
